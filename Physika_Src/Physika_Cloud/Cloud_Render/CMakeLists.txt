@@ -21,6 +21,6 @@ aux_source_directory(. srcs)
 #message(STATUS  "=============" ${srcs})
 
 add_executable(Physika_CloudRender ${srcs})
+add_library(Physika_CloudRender_lib ${srcs})
 target_link_libraries(Physika_CloudRender Physika_CloudDepdency_lib SDFGen_lib)
-#target_link_libraries(Physika_CloudRender SDFGen_lib)
 
