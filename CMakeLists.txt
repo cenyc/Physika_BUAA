@@ -5,17 +5,23 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(Physika_Src)
 
 
-
-#czn
-
-
-message(STATUS "envs:")
-message(STATUS "CUDA_API_PATH $ENV{CUDA_API_PATH}")
+#message(STATUS "envs:")
+#message(STATUS "CUDA_API_PATH $ENV{CUDA_API_PATH}")
 
 
-add_subdirectory(Physika_Src/Physika_Cloud/Cloud_Dependency)
+set(CMAKE_BUILD_TYPE debug)
 
-ADD_SUBDIRECTORY(Physika_Src/Physika_Cloud/Cloud_Render)
+
+#set(PROJECT_BINARY_DIR   ${CMAKE_SOURCE_DIR}/cmake_build)
+set(CMAKE_BINARY_DIR    ${CMAKE_SOURCE_DIR}/cmake_build)
+set(CMAKE_CURRENT_BINARY_DIR     ${CMAKE_SOURCE_DIR}/cmake_build)
+
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+#message(STATUS "++++++++++++" ${CMAKE_BINARY_DIR} " " ${PROJECT_BINARY_DIR} " " ${CMAKE_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY})
+
+add_subdirectory(Physika_Src)
+
 add_executable(Physika main.cpp )
-#target_link_libraries(Physika Physika_Core_lib)
-#target_link_libraries(Physika Physika_Dependency_lib)
+#file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
