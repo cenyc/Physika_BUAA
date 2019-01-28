@@ -1,38 +1,38 @@
 #pragma once
-#define PHYSIKA_VERSION "0.1.0"
-#define PHYSIKA_VERSION_MAJOR "0"
-#define PHYSIKA_VERSION_MINOR "1"
-#define PHYSIKA_VERSION_PATCH "0"
+#define NEOPHYSICS_VERSION "0.1.0"
+#define NEOPHYSICS_VERSION_MAJOR "0"
+#define NEOPHYSICS_VERSION_MINOR "1"
+#define NEOPHYSICS_VERSION_PATCH "0"
 
 
 #if ((defined _WIN32) || (defined(__MINGW32__) || defined(__CYGWIN__))) && defined(_DLL)
-#if !defined(PHYSIKA_DLL) && !defined(PHYSIKA_STATIC)
-#define PHYSIKA_DLL
+#if !defined(NEO_DLL) && !defined(NEO_STATIC)
+#define NEO_DLL
 #endif
 #endif
 
-#if ((defined _WIN32) || (defined(__MINGW32__) || defined(__CYGWIN__))) && defined(PHYSIKA_DLL)
-#define PHYSIKA_EXPORT __declspec(dllexport)
-#define PHYSIKA_IMPORT __declspec(dllimport)
+#if ((defined _WIN32) || (defined(__MINGW32__) || defined(__CYGWIN__))) && defined(NEO_DLL)
+#define NEO_EXPORT __declspec(dllexport)
+#define NEO_IMPORT __declspec(dllimport)
 #else
-#define PHYSIKA_EXPORT
-#define PHYSIKA_IMPORT
+#define NEO_EXPORT
+#define NEO_IMPORT
 #endif
 
-#if defined(PHYSIKA_API_COMPILE)
-#define PHYSIKAApi PHYSIKA_EXPORT
+#if defined(NEO_API_COMPILE)
+#define NEOApi NEO_EXPORT
 #else
-#define PHYSIKAAPI PHYSIKA_IMPORT
+#define NEOAPI NEO_IMPORT
 #endif
 
-#define PHYSIKA_COMPILER_CUDA
+#define NEO_COMPILER_CUDA
 
-#if(defined(PHYSIKA_COMPILER_CUDA))
-#	define COMM_FUNC __device__ __host__ 
+#if(defined(NEO_COMPILER_CUDA))
+#	define HYBRID_FUNC __device__ __host__ 
 #	define GPU_FUNC __device__ 
 #	define CPU_FUNC __host__ 
 #else
-#	define COMM_FUNC
+#	define HYBRID_FUNC
 #	define GPU_FUNC 
 #	define CPU_FUNC 
 #endif
@@ -43,9 +43,7 @@ enum DeviceType
 	GPU,
 	UNDEFINED
 };
-
-#define PRECISION_FLOAT
-
+// 
 #ifdef PRECISION_FLOAT
 typedef float Real;
 #else

@@ -21,7 +21,7 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #elif defined(_MSC_VER)
-#include "StackWalker/StackWalker.h"
+#include "Physika_Dependency/StackWalker/StackWalker.h"
 #endif
 
 #include <sstream>

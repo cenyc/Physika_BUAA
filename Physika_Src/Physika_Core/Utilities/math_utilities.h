@@ -18,7 +18,6 @@
 #include <limits>
 #include <cmath>
 #include "Physika_Core/Utilities/cuda_utilities.h"
-#include "Physika_Core/Platform.h"
 
 namespace Physika{
 
@@ -49,31 +48,31 @@ constexpr double DOUBLE_MIN = std::numeric_limits<double>::lowest();
  * support sqrt and abs of integer type
  */
 template <typename Scalar>
-COMM_FUNC Scalar abs(Scalar value)
+CPU_GPU_FUNC_DECL Scalar abs(Scalar value)
 {
     return value>=0?value:-value;
 }
 
-// inline float sqrt(float value)
-// {
-//     return std::sqrt(value);
-// }
-// 
-// inline double sqrt(double value)
-// {
-//     return std::sqrt(value);
-// }
+inline float sqrt(float value)
+{
+    return std::sqrt(value);
+}
 
-// inline long double sqrt(long double value)
-// {
-//     return std::sqrt(value);
-// }
+inline double sqrt(double value)
+{
+    return std::sqrt(value);
+}
 
-// template <typename Scalar>
-// inline double sqrt(Scalar value)
-// {
-//     return std::sqrt(static_cast<double>(value));
-// }
+inline long double sqrt(long double value)
+{
+    return std::sqrt(value);
+}
+
+template <typename Scalar>
+inline double sqrt(Scalar value)
+{
+    return std::sqrt(static_cast<double>(value));
+}
 
 inline float cbrt(float value)
 {
@@ -109,17 +108,17 @@ inline Scalar max(Scalar lhs, Scalar rhs)
     return lhs > rhs ? lhs : rhs;
 }
 
-// #undef min //undefine the min in WinDef.h
-// template <typename Scalar>
-// inline Scalar min(Scalar lhs, Scalar rhs)
-// {
-//     return lhs < rhs ? lhs : rhs;
-// }
+#undef min //undefine the min in WinDef.h
+template <typename Scalar>
+inline Scalar min(Scalar lhs, Scalar rhs)
+{
+    return lhs < rhs ? lhs : rhs;
+}
 
 //compare if two floating point numbers are equal
 //ref: http://floating-point-gui.de/errors/comparison/
 template <typename Scalar>
-COMM_FUNC bool isEqual(Scalar a, Scalar b, double relative_tolerance = 1.0e-6)
+CPU_GPU_FUNC_DECL bool isEqual(Scalar a, Scalar b, double relative_tolerance = 1.0e-6)
 {
     Scalar abs_a = abs(a), abs_b = abs(b), diff = abs(a-b);
     Scalar epsilon = std::numeric_limits<Scalar>::epsilon();
