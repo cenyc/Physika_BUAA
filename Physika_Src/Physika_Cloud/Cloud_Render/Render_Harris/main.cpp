@@ -198,6 +198,7 @@ int main(int argc, char *argv[])
 	cout << "Initializing Skydome demo" << endl;
 	if (SDL_Init(SDL_INIT_VIDEO) <  0) 
 	{
+	    cout << "Could not initialize Sdl\n";
 		cout << "Could not initialize SDL:" << SDL_GetError() << endl;
 		SDL_Quit();
 		return 1;

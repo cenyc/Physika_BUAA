@@ -1,6 +1,7 @@
 #include "Common.h"
 
 #define NUM_SKYCOLORS 16
+extern std::string get_cwd();
 
 //a nice Norwegian sky, using a D-Image Z3 camera
 // Oslo, Fagerborg, 17/8/2005, 12:41
@@ -92,7 +93,7 @@ int CSkyDome::Initialize(float Radius, int Slices, int Sides, bool exponential)
 	ilGenImages(1, &ImgID);//����ͼ��
 	ilBindImage(ImgID);
 	
-	if (ilLoadImage("/home/czn/Desktop/CloudRendering/flare0.bmp") == false)
+	if (ilLoadImage((get_cwd()+"/../../data/Cloud_Render/Harris/flare0.bmp").c_str()) == false)
 	{
 		cout << "Cannot load flare0.bmp" << endl;
 		return 1;
