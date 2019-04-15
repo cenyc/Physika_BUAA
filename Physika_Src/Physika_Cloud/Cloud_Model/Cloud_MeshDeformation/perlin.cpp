@@ -1,10 +1,11 @@
 /* coherent noise function over 1, 2 or 3 dimensions */
 /* (copyright Ken Perlin) */
 #pragma once
-#include "precompiled.h"
+#include "total.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
 #include "perlin.h"
 
 #define B SAMPLE_SIZE
@@ -202,6 +203,7 @@ void Perlin::init(void)
 	}
 }
 
+
 float Perlin::perlin_noise_2D(float vec[2])
 {
 	int terms = mOctaves;
@@ -222,6 +224,8 @@ float Perlin::perlin_noise_2D(float vec[2])
 
 	return result;
 }
+
+
 
 Perlin::Perlin(int octaves, float freq, float amp, int seed)
 {

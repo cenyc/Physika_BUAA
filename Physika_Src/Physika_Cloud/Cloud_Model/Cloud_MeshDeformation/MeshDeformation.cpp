@@ -1,9 +1,8 @@
-
 #pragma once
-#include "precompiled.h"
+#include "total.h"
 #include "MeshDeformation.h"
 #include "perlin.h"
-#include "Physika_Core\Vectors\vector_3d.h"
+#include "Vector.h"
 #include <set>
 #include <algorithm>
 #include <iostream>
@@ -17,9 +16,8 @@
 #include <vector>
 #include <omp.h>
 using namespace std;
-using namespace Physika;
 
-#define M_PI 3.14159265358979323846
+#define M_PI  3.14159265358979323846
 
 MeshDeformation::MeshDeformation(void)
 {
@@ -33,6 +31,91 @@ MeshDeformation::MeshDeformation(void)
 	pixelTypeList = NULL;
 
 	weight_dobashi = 0.65;
+
+	//test
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=1.5;
+	//diff_z_scale=1.0;
+	//N_cons=1000;
+
+	////test0
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=1.5;
+	//diff_z_scale=1.0;
+	//N_cons=2000;
+
+
+
+	////test3
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=1.0;
+	//diff_z_scale=1.0;
+	//N_cons=4000;
+
+	////5
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=2;
+	//diff_z_scale=1.0;
+	//N_cons=200;
+
+	//11
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=2;
+	//diff_z_scale=0.8;
+	//N_cons=3000;
+
+	////13
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=1.5;
+	//diff_z_scale=0.95;
+	//N_cons=3000;
+
+	////14
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=1.5;
+	//diff_z_scale=1.0;
+	//N_cons=2000;
+
+	////64
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=2.0;
+	//diff_z_scale=1.0;
+	//N_cons=3500;
+	////65
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=2.0;
+	//diff_z_scale=1.0;
+	//N_cons=5000;
+
+	////61
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=2.0;
+	//diff_z_scale=1.0;
+	//N_cons=3000;
+
+	////e1
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=2.0;
+	//diff_z_scale=1.0;
+	//N_cons=4000;
+
+	////69
+	//boundary_weight=5.0;
+	//interior_weight=0.05;
+	//dis_scale=1.5;
+	//diff_z_scale=1.0;
+	//N_cons=4000;
 
 	//1x
 	boundary_weight = 5.0;
@@ -60,7 +143,7 @@ MeshDeformation::~MeshDeformation(void)
 		delete[] pixelTypeList;
 }
 
-int MeshDeformation::CreateMesh(char*  offfile)
+int MeshDeformation::CreateMesh(string offfile)
 {
 
 	if (!OpenMesh::IO::read_mesh(mesh, offfile))
@@ -96,7 +179,7 @@ int MeshDeformation::CreateMesh(char*  offfile)
 		//mesh.release_face_normals();
 	}
 
-	//¼ìË÷²¢±£´æ±ß½ç½Úµãµ½boundaryVerList
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½Úµãµ½boundaryVerList
 	CreateBoundaryList();
 	CreateDistance2D();
 
@@ -114,7 +197,7 @@ int MeshDeformation::CreateMesh(char*  offfile)
 	return 1;
 }
 
-bool MeshDeformation::OutputDeformedMesh(char*  meshfile)
+bool MeshDeformation::OutputDeformedMesh(string meshfile)
 {
 	// write mesh to output.obj
 	try
@@ -131,6 +214,175 @@ bool MeshDeformation::OutputDeformedMesh(char*  meshfile)
 		return 1;
 	}
 }
+
+//void MeshDeformation::DrawMesh()
+//{
+//	float mesh_z_min = MAXVAL;
+//
+//	openMesh::VertexIter          v_it, v_end(mesh.vertices_end());
+//	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
+//	{
+//		openMesh::Point  pt = mesh.point(v_it);
+//		mesh_z_min = min(pt[2], mesh_z_min);
+//
+//	}
+//
+//
+//
+//
+//	float z_max = -MAXVAL;
+//	float z_min = MAXVAL;
+//
+//	float sys_plane = mesh_z_min;
+//
+//	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
+//	{
+//		openMesh::Point  pt = mesh.point(v_it);
+//		z_max = max(pt[2], z_max);
+//		z_max = max(2 * sys_plane - pt[2], z_max);
+//		z_min = min(pt[2], z_min);
+//		z_min = min(2 * sys_plane - pt[2], z_min);
+//	}
+//
+//	float z_center = (z_max + z_min) / 2.0;
+//
+//
+//
+//
+//
+//	mesh.update_normals();
+//
+//	openMesh::FaceIter          f_it, f_end(mesh.faces_end());
+//	for (f_it = mesh.faces_begin(); f_it != f_end; ++f_it)
+//	{
+//		openMesh::FaceVertexIter  fv_it, fv_end(mesh.fv_end(f_it));
+//
+//		openMesh::Normal   normal = mesh.normal(f_it);
+//		Vector3  normalVec(normal[0], normal[1], normal[2]);
+//		glNormal3fv(!normalVec);
+//		glBegin(GL_POLYGON);
+//		for (fv_it = mesh.fv_begin(f_it); fv_it != fv_end; ++fv_it)
+//		{
+//			openMesh::Point  pt = mesh.point(fv_it);
+//			Vector3 ver(pt[0], pt[1], pt[2] - z_center);
+//			glVertex3fv(!ver);
+//
+//		}
+//		glEnd();
+//
+//
+//	}
+//
+//
+//	//back surface
+//	for (f_it = mesh.faces_begin(); f_it != f_end; ++f_it)
+//	{
+//		openMesh::FaceVertexIter  fv_it, fv_end(mesh.fv_end(f_it));
+//		Vector3 ver[3];
+//		int i = 0;
+//		for (fv_it = mesh.fv_begin(f_it); i < 3, fv_it != fv_end; ++fv_it, i++)
+//		{
+//			openMesh::Point  pt = mesh.point(fv_it);
+//			pt[2] = 2 * sys_plane - pt[2] - z_center;
+//			ver[i] = Vector3(pt[0], pt[1], pt[2]);
+//
+//		}
+//
+//		Vector3 normalVec;
+//		ComputeTriangleNormal(!normalVec, !(ver[0]), !(ver[2]), !(ver[1]));
+//		glNormal3fv(!normalVec);
+//		glBegin(GL_POLYGON);
+//		glVertex3fv(!ver[0]);
+//		glVertex3fv(!ver[2]);
+//		glVertex3fv(!ver[1]);
+//		glEnd();
+//
+//
+//	}
+//
+//
+//	//side surface
+//	vector<Vector3>  frontBoudaryList;
+//	vector<Vector3>  backBoudaryList;
+//	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
+//	{
+//		if (mesh.is_boundary(v_it))
+//		{
+//			openMesh::Point  pt = mesh.point(v_it);
+//			float z = pt[2] - z_center;
+//			Vector3 frontBoudaryVer = Vector3(pt[0], pt[1], z);
+//			z = 2 * sys_plane - pt[2] - z_center;
+//			Vector3 backBoudaryVer = Vector3(pt[0], pt[1], z);
+//			frontBoudaryList.push_back(frontBoudaryVer);
+//			backBoudaryList.push_back(backBoudaryVer);
+//
+//		}
+//
+//	}
+//
+//	for (int i = 0; i < frontBoudaryList.size() - 1; i++)
+//	{
+//		Vector3 normalVec, ver[3];
+//		ver[0] = backBoudaryList[i];
+//		ver[1] = frontBoudaryList[i + 1];
+//		ver[2] = frontBoudaryList[i];
+//		ComputeTriangleNormal(!normalVec, !(ver[0]), !(ver[1]), !(ver[2]));
+//		glNormal3fv(!normalVec);
+//		glBegin(GL_POLYGON);
+//		glVertex3fv(!ver[0]);
+//		glVertex3fv(!ver[1]);
+//		glVertex3fv(!ver[2]);
+//		glEnd();
+//
+//		ver[0] = backBoudaryList[i];
+//		ver[1] = backBoudaryList[i + 1];
+//		ver[2] = frontBoudaryList[i + 1];
+//		ComputeTriangleNormal(!normalVec, !(ver[0]), !(ver[1]), !(ver[2]));
+//		glNormal3fv(!normalVec);
+//		glBegin(GL_POLYGON);
+//		glVertex3fv(!ver[0]);
+//		glVertex3fv(!ver[1]);
+//		glVertex3fv(!ver[2]);
+//		glEnd();
+//
+//	}
+//
+//
+//
+//	glDisable(GL_LIGHTING);
+//	glColor3f(1, 0, 0);
+//	glPointSize(3.0);
+//	glBegin(GL_POINTS);
+//	for (int i = 0; i < boundaryVerList.size(); i++)
+//	{
+//		openMesh::Point  pt = mesh.point(boundaryVerList[i]);
+//		Vector3 ver(pt[0], pt[1], pt[2] - z_center);
+//		/*		glColor3f(0.1,float(i)/boundaryVerList.size(),0);*/
+//		glColor3f(1, 0, 0);
+//		glVertex3fv(!ver);
+//
+//	}
+//	glEnd();
+//
+//
+//	glDisable(GL_LIGHTING);
+//	glColor3f(1, 0, 0);
+//	glBegin(GL_POINTS);
+//	for (int i = 0; i < constraintVerList.size(); i++)
+//	{
+//		openMesh::Point  pt = mesh.point(constraintVerList[i]);
+//		Vector3 ver(pt[0], pt[1], pt[2] - z_center);
+//		glColor3f(0, 1, 0);
+//		glVertex3fv(!ver);
+//
+//	}
+//	glEnd();
+//
+//
+//	DrawSelectedVertices();
+//
+//	glPointSize(1.0);
+//}
 
 void MeshDeformation::NormalizeMesh()
 {
@@ -185,7 +437,7 @@ void MeshDeformation::NormalizeMesh(openMesh& mesh)
 	openMesh::VertexIter v_it, v_end(mesh.vertices_end());
 	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
 	{
-		openMesh::Point pt = mesh.point(*v_it);
+		openMesh::Point  pt = mesh.point(*v_it);
 		x_min = min(x_min, pt[0]);
 		x_max = max(x_max, pt[0]);
 		y_min = min(y_min, pt[1]);
@@ -206,15 +458,97 @@ void MeshDeformation::NormalizeMesh(openMesh& mesh)
 	}
 }
 
-void MeshDeformation::MoveCurSelectedVertex(Vector3f direction, float dis)
-{
-	if (selectedVertices.size() == 0)
-		return;
-	openMesh::VertexIter v_it = selectedVertices[selectedVertices.size() - 1];
+//Vector3 MeshDeformation::GetPixelLoc(float x, float y, float z)
+//{
+//	GLdouble modelMatrix[16];
+//	GLdouble projMatrix[16];
+//	GLint viewport[4];
+//	//
+//	GLdouble objx = x;
+//	GLdouble objy = y;
+//	GLdouble objz = z;
+//	//
+//	GLdouble pix_x;
+//	GLdouble pix_y;
+//	GLdouble pix_z;
+//	//
+//	glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+//	glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+//	glGetIntegerv(GL_VIEWPORT, viewport);
+//	//
+//	int result = gluProject(objx, objy, objz, modelMatrix, projMatrix, viewport,
+//		&pix_x, &pix_y, &pix_z);
+//	//
+//	Vector3 pixel;
+//	//
+//	// need to reverse y since OpenGL has y=0 at bottom, but windows has y=0 at top
+//	//
+//	pixel.x = pix_x;
+//	pixel.y = viewport[1] + viewport[3] - pix_y;
+//	pixel.z = pix_z;
+//	//
+//	return  pixel;
+//}
 
-	Vector3f displace = direction*dis;
-	openMesh::Point pt = mesh.point(*v_it) + openMesh::Point(displace[0], displace[1], displace[2]);      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	mesh.set_point(*v_it, pt);
+//void  MeshDeformation::SelectVertex(int x, int y)
+//{
+//	vector<pixelStuct>  pixelList;
+//	openMesh::VertexIter          v_it, v_end(mesh.vertices_end());
+//	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
+//	{
+//		openMesh::Point  pt = mesh.point(v_it);
+//
+//		Vector3  curPixel = GetPixelLoc(pt[0], pt[1], pt[2]);
+//
+//		if (pow(curPixel.x - x, 2) + pow(curPixel.y - y, 2) < 15)
+//		{
+//			pixelList.push_back(pixelStuct(curPixel, v_it));
+//		}
+//
+//
+//	}
+//	float  min_depth = MAXVAL;
+//	float  min_index = -1;
+//	for (int i = 0; i < pixelList.size(); i++)
+//	{
+//		if (min_depth > pixelList[i].pixel.z)
+//		{
+//			min_depth = pixelList[i].pixel.z;
+//			min_index = i;
+//		}
+//
+//	}
+//	if (min_index >= 0)
+//		selectedVertices.push_back(pixelList[min_index].v_it);
+//}
+
+//void MeshDeformation::DrawSelectedVertices()
+//{
+//	glDisable(GL_LIGHTING);
+//	glColor3f(1, 1, 1);
+//	glPointSize(3.0);
+//	glBegin(GL_POINTS);
+//	for (int i = 0; i < selectedVertices.size(); i++)
+//	{
+//		openMesh::VertexIter  v_it = selectedVertices[i];
+//		openMesh::Point  pt = mesh.point(v_it);
+//		glVertex3f(pt[0], pt[1], pt[2]);
+//
+//	}
+//
+//	glEnd();
+//}
+
+void MeshDeformation::MoveCurSelectedVertex(Vector3 direction,  float dis )
+{
+	if(selectedVertices.size()==0)
+		return;
+	openMesh::VertexIter  v_it=selectedVertices[selectedVertices.size()-1];
+
+    Vector3  displace=direction*dis;
+	openMesh::Point  pt=mesh.point(*v_it)+openMesh::Point(displace.x,displace.y,displace.z);
+	mesh.set_point(*v_it,pt);
+
 }
 
 void MeshDeformation::CreateLaplaceMatrix()
@@ -222,14 +556,14 @@ void MeshDeformation::CreateLaplaceMatrix()
 	laplaceMat.clear();
 
 	int row;
-	int nSingular = 0;
+	int  nSingular = 0;
 	openMesh::VertexIter v_it, v_end(mesh.vertices_end());
 	for (row = 0, v_it = mesh.vertices_begin(); v_it != v_end; ++v_it, row++)
 	{
 		openMesh::VertexVertexIter vv_it;
 
 		int  valence = 0;
-		for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid() == true; ++vv_it)
+		for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid()==true; ++vv_it)
 		{
 			valence++;
 		}
@@ -245,7 +579,7 @@ void MeshDeformation::CreateLaplaceMatrix()
 			MatElement matEle(row, row, 1.0);
 			laplaceMat.push_back(matEle);
 
-			for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid() == true; ++vv_it)
+			for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid()==true; ++vv_it)
 			{
 				int  col = vv_it->idx();
 				MatElement matEle(row, col, -1.0 / valence);
@@ -254,6 +588,8 @@ void MeshDeformation::CreateLaplaceMatrix()
 
 			}
 		}
+
+
 	}
 	cout << "Laplace matrix------------done!" << "   Vertice with zero valence:   " << nSingular << endl;
 }
@@ -261,6 +597,8 @@ void MeshDeformation::CreateLaplaceMatrix()
 void MeshDeformation::CreateDifCoorList()
 {
 	diferentialCoordinateList.clear();
+
+
 	openMesh::VertexIter v_it, v_end(mesh.vertices_end());
 	int row;
 	for (row = 0, v_it = mesh.vertices_begin(); v_it != v_end; ++v_it, row++)
@@ -272,26 +610,28 @@ void MeshDeformation::CreateDifCoorList()
 		{
 			valence++;
 		}
+
 		if (valence == 0)
 		{
-			openMesh::Point  pt = mesh.point(*v_it);
-			Vector3f difCoor = Vector3f(pt[0], pt[1], pt[2]);
+			openMesh::Point pt = mesh.point(*v_it);
+			Vector3 difCoor = Vector3(pt[0], pt[1], pt[2]);
 			diferentialCoordinateList.push_back(difCoor);
 		}
+
 		else
 		{
 			openMesh::Point  pt = mesh.point(*v_it);
-			Vector3f curVer = Vector3f(pt[0], pt[1], pt[2]);
-			Vector3f  sumNeigbor = Vector3f(0, 0, 0);
+			Vector3 curVer = Vector3(pt[0], pt[1], pt[2]);
+			Vector3  sumNeigbor = Vector3(0, 0, 0);
 			for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid() == true; ++vv_it)
 			{
-				openMesh::Point  neigbor_pt = mesh.point(*vv_it);
-				Vector3f neiVer = Vector3f(neigbor_pt[0], neigbor_pt[1], neigbor_pt[2]);
+				openMesh::Point neigbor_pt = mesh.point(*vv_it);
+				Vector3 neiVer = Vector3(neigbor_pt[0], neigbor_pt[1], neigbor_pt[2]);
 				sumNeigbor = sumNeigbor + neiVer;
-
 			}
 
-			Vector3f difCoor = curVer - sumNeigbor*(1.0 / valence);
+			Vector3  difCoor = curVer - sumNeigbor*(1.0 / valence);
+
 			diferentialCoordinateList.push_back(difCoor);
 		}
 	}
@@ -309,21 +649,30 @@ void MeshDeformation::AddConstrains()
 		laplaceMat.push_back(matEle);
 
 		openMesh::Point  pt = mesh.point(*(selectedVertices[i]));
-		Vector3f constrains_coor = Vector3f(pt[0], pt[1], pt[2])*weight;
+		Vector3 constrains_coor = Vector3(pt[0], pt[1], pt[2])*weight;
 		diferentialCoordinateList.push_back(constrains_coor);
+
 	}
 }
 
 bool MeshDeformation::UpdateMesh()
 {
+	//if (!libcomputenewmeshverInitialize())
+	//{
+	//	std::cout << "Could not initialize libcomputenewmeshver!" << std::endl;
+	//	std::cout << "Really CANNOT initialize" << std::endl;
+	//	return false;
+	//}
+	//try
+	//{
 	typedef Eigen::SparseMatrix<float> SpMat;
 
 	int* rowList = new int[laplaceMat.size()];
 	int* colList = new int[laplaceMat.size()];
 	float* weightList = new float[laplaceMat.size()];
-	float* differentialCoorList_X = new float[diferentialCoordinateList.size()];
-	float* differentialCoorList_Y = new float[diferentialCoordinateList.size()];
-	float* differentialCoorList_Z = new float[diferentialCoordinateList.size()];
+	float*  differentialCoorList_X = new float[diferentialCoordinateList.size()];
+	float*  differentialCoorList_Y = new float[diferentialCoordinateList.size()];
+	float*  differentialCoorList_Z = new float[diferentialCoordinateList.size()];
 
 	int matrix_rows = -1;
 	int matrix_cols = -1;
@@ -341,14 +690,14 @@ bool MeshDeformation::UpdateMesh()
 	}
 	for (int i = 0; i < diferentialCoordinateList.size(); i++)
 	{
-		differentialCoorList_X[i] = diferentialCoordinateList[i][0];
-		differentialCoorList_Y[i] = diferentialCoordinateList[i][1];
-		differentialCoorList_Z[i] = diff_z_scale*diferentialCoordinateList[i][2];
+		differentialCoorList_X[i] = diferentialCoordinateList[i].x;
+		differentialCoorList_Y[i] = diferentialCoordinateList[i].y;
+		differentialCoorList_Z[i] = diff_z_scale*diferentialCoordinateList[i].z;
 	}
-
+	
 	SpMat matrix(matrix_rows + 1, matrix_cols + 1);
-	vector<Eigen::Triplet<float>> tmp;
-
+	vector<Eigen::Triplet<float> > tmp;
+ 
 	for (int i = 0; i < laplaceMat.size(); i++)
 	{
 		//cout << i << "  "<<rowList[i]<<"  "<<colList[i]<<endl;
@@ -373,39 +722,19 @@ bool MeshDeformation::UpdateMesh()
 
 	Eigen::VectorXf** eDifferentialCoorList_Total = new Eigen::VectorXf*[3];
 	eDifferentialCoorList_Total[0] = &eDifferentialCoorList_X;
-	eDifferentialCoorList_Total[1] = &eDifferentialCoorList_Y;
+	eDifferentialCoorList_Total[1] = &eDifferentialCoorList_Y;	
 	eDifferentialCoorList_Total[2] = &eDifferentialCoorList_Z;
 
 	Eigen::VectorXf eTotal[3];
 
 #pragma omp parallel num_threads(3)
 	{
-#pragma omp for
+        #pragma omp for
 		for (int i = 0; i < 3; i++)
 		{
 			eTotal[i] = lscg.solve(*(eDifferentialCoorList_Total[i]));
 		}
 	}
-	//mwArray mRowList(laplaceMat.size(), 1, mxDOUBLE_CLASS);
-	//mwArray mColList(laplaceMat.size(), 1, mxDOUBLE_CLASS);
-	//mwArray mWeigtList(laplaceMat.size(), 1, mxDOUBLE_CLASS);
-
-	//mwArray mDifferentialCoorList_X(diferentialCoordinateList.size(), 1, mxDOUBLE_CLASS);
-	//mwArray mDifferentialCoorList_Y(diferentialCoordinateList.size(), 1, mxDOUBLE_CLASS);
-	//mwArray mDifferentialCoorList_Z(diferentialCoordinateList.size(), 1, mxDOUBLE_CLASS);
-
-	//mwArray mX(mesh.n_vertices(), 1, mxDOUBLE_CLASS);
-	//mwArray mY(mesh.n_vertices(), 1, mxDOUBLE_CLASS);
-	//mwArray mZ(mesh.n_vertices(), 1, mxDOUBLE_CLASS);
-
-	//mRowList.SetData(rowList, laplaceMat.size());
-	//mColList.SetData(colList, laplaceMat.size());
-	//mWeigtList.SetData(weightList, laplaceMat.size());
-	//mDifferentialCoorList_X.SetData(differentialCoorList_X, diferentialCoordinateList.size());
-	//mDifferentialCoorList_Y.SetData(differentialCoorList_Y, diferentialCoordinateList.size());
-	//mDifferentialCoorList_Z.SetData(differentialCoorList_Z, diferentialCoordinateList.size());
-
-	//ComputeNewMeshVer(3, mX, mY, mZ, mRowList, mColList, mWeigtList, mDifferentialCoorList_X, mDifferentialCoorList_Y, mDifferentialCoorList_Z);
 
 	float*  X = new float[mesh.n_vertices()];
 	float*  Y = new float[mesh.n_vertices()];
@@ -422,8 +751,8 @@ bool MeshDeformation::UpdateMesh()
 	//mY.GetData(Y, mesh.n_vertices());
 	//mZ.GetData(Z, mesh.n_vertices());
 
-	openMesh::VertexIter v_it, v_end(mesh.vertices_end());
-	openMesh::VertexIter dv_it, dv_end(deformedMesh.vertices_end());
+	openMesh::VertexIter  v_it, v_end(mesh.vertices_end());
+	openMesh::VertexIter  dv_it, dv_end(deformedMesh.vertices_end());
 	int i = 0;
 	for (i = 0, v_it = mesh.vertices_begin(), dv_it = deformedMesh.vertices_begin(); v_it != v_end; ++v_it, ++dv_it, i++)
 	{
@@ -453,17 +782,12 @@ bool MeshDeformation::UpdateMesh()
 	delete[] differentialCoorList_X;
 	delete[] differentialCoorList_Y;
 	delete[] differentialCoorList_Z;
-	//}
-	//catch (const mwException& e)
-	//{
-	//	std::cerr << e.what() << std::endl;
-	//}
-	//libcomputenewmeshverTerminate();
 	return true;
 }
 
 void MeshDeformation::AddBoudaryContrainst()
 {
+
 	float weight = boundary_weight;
 	int cur_col_count = diferentialCoordinateList.size();
 	for (int i = 0; i < boundaryVerList.size(); i++)
@@ -474,10 +798,62 @@ void MeshDeformation::AddBoudaryContrainst()
 		MatElement matEle(row, col, weight);
 		laplaceMat.push_back(matEle);
 
-		Vector3f constrains_coor = Vector3f(pt[0], pt[1], basePlane)*weight;
+		Vector3 constrains_coor = Vector3(pt[0], pt[1], basePlane)*weight;
 		diferentialCoordinateList.push_back(constrains_coor);
+
 	}
 }
+
+//void MeshDeformation::DrawDeformedMesh()
+//{
+//	glEnable(GL_LIGHTING);
+//
+//	deformedMesh.update_normals();
+//
+//	openMesh::FaceIter          f_it, f_end(deformedMesh.faces_end());
+//	for (f_it = deformedMesh.faces_begin(); f_it != f_end; ++f_it)
+//	{
+//		openMesh::FaceVertexIter  fv_it, fv_end(deformedMesh.fv_end(f_it));
+//
+//		openMesh::Normal   normal = deformedMesh.normal(f_it);
+//		Vector3  normalVec(normal[0], normal[1], normal[2]);
+//		glNormal3fv(!normalVec);
+//		glBegin(GL_POLYGON);
+//		for (fv_it = deformedMesh.fv_begin(f_it); fv_it != fv_end; ++fv_it)
+//		{
+//			openMesh::Point  pt = deformedMesh.point(fv_it);
+//			Vector3 ver(pt[0], pt[1], pt[2]);
+//			glVertex3fv(!ver);
+//
+//		}
+//		glEnd();
+//	}
+//}
+
+//void MeshDeformation::Draw(DrawType drawType)
+//{
+//	switch (drawType)
+//	{
+//	case  InputMesh:
+//		DrawMesh();
+//		break;
+//	case ConstraintMesh:
+//		DrawConstraintMesh();
+//		break;
+//	case CloudPIxelOnBasePlane:
+//		DrawDistance2D();
+//		break;
+//	case Distance:
+//		DrawDistance();
+//		break;
+//	case DeformedMesh:
+//		DrawDeformedMesh();
+//		break;
+//	case Height:
+//		DrawHeightField();
+//		break;
+//	}
+//}
 
 bool MeshDeformation::OutputTempMesh(char* meshfile)
 {
@@ -506,7 +882,7 @@ void MeshDeformation::CreateEntireHeightFieldAndMesh()
 
 	int* accumulatedBoundaryCountList = new int[nVer];
 	int accumulated = 0;
-	openMesh::VertexIter v_it, v_end(deformedMesh.vertices_end());
+	openMesh::VertexIter          v_it, v_end(deformedMesh.vertices_end());
 	for (v_it = deformedMesh.vertices_begin(); v_it != v_end; ++v_it)
 	{
 		accumulatedBoundaryCountList[v_it->idx()] = accumulated;
@@ -539,16 +915,16 @@ void MeshDeformation::CreateEntireHeightFieldAndMesh()
 			else
 			{
 				//nearest neighbor interpolation
-				Vector2f pos = df.GetPos(j, i);
+				Vector2  pos = df.GetPos(j, i);
 				float dis = MAXVAL;
-				float H = 0.0;
-				openMesh::VertexIter v_it, v_end(deformedMesh.vertices_end());
+				float  H = 0.0;
+				openMesh::VertexIter   v_it, v_end(deformedMesh.vertices_end());
 				for (v_it = deformedMesh.vertices_begin(); v_it != v_end; ++v_it)
 				{
 
-					openMesh::Point pt = deformedMesh.point(*v_it);
-					Vector2f cur_pos(pt[0], pt[1]);
-					float cur_dis = (cur_pos-pos).dot(cur_pos-pos);
+					openMesh::Point  pt = deformedMesh.point(*v_it);
+					Vector2  cur_pos(pt[0], pt[1]);
+					float cur_dis = Dot(cur_pos - pos, cur_pos - pos);
 					if (cur_dis < dis)
 					{
 						dis = cur_dis;
@@ -571,6 +947,7 @@ void MeshDeformation::CreateEntireHeightFieldAndMesh()
 
 			ptList.push_back(pt);
 		}
+
 	}
 	//Create  behind HeightField
 	behindHF = new float[PARTICLE_RES*PARTICLE_RES];
@@ -586,7 +963,7 @@ void MeshDeformation::CreateEntireHeightFieldAndMesh()
 			else
 			{
 				//nearest neighbor interpolation
-				Vector2f  pos = df.GetPos(j, i);
+				Vector2  pos = df.GetPos(j, i);
 				float dis = MAXVAL;
 				float  H = 0.0;
 				openMesh::VertexIter   v_it, v_end(deformedMesh.vertices_end());
@@ -600,8 +977,8 @@ void MeshDeformation::CreateEntireHeightFieldAndMesh()
 						pt[2] = weight_dobashi*dobashi + our*(1 - weight_dobashi);
 
 					}
-					Vector2f cur_pos(pt[0], pt[1]);
-					float cur_dis = (cur_pos - pos).dot(cur_pos - pos);
+					Vector2  cur_pos(pt[0], pt[1]);
+					float cur_dis = Dot(cur_pos - pos, cur_pos - pos);
 					if (cur_dis < dis)
 					{
 						dis = cur_dis;
@@ -613,7 +990,7 @@ void MeshDeformation::CreateEntireHeightFieldAndMesh()
 		}//for ij 
 	}
 	int* faceList = new int[nFace * 3 * 2];
-	openMesh::FaceIter          f_it, f_end(deformedMesh.faces_end());
+	openMesh::FaceIter f_it, f_end(deformedMesh.faces_end());
 	int i;
 	for (f_it = deformedMesh.faces_begin(); f_it != f_end; ++f_it)
 	{
@@ -673,17 +1050,21 @@ void MeshDeformation::ClearMesh(openMesh& mesh)
 	for (f_it = deformedMesh.faces_begin(); f_it != f_end; ++f_it)
 	{
 		mesh.delete_face(*f_it);
+
 	}
 	openMesh::EdgeIter e_it, e_end(deformedMesh.edges_end());
 	for (e_it = deformedMesh.edges_begin(); e_it != e_end; ++e_it)
 	{
 		mesh.delete_edge(*e_it);
+
 	}
 	openMesh::VertexIter v_it, v_end(deformedMesh.vertices_end());
 	for (v_it = deformedMesh.vertices_begin(); v_it != v_end; ++v_it)
 	{
 		mesh.delete_vertex(*v_it);
+
 	}
+
 	mesh.garbage_collection();
 }
 
@@ -703,7 +1084,7 @@ void MeshDeformation::SmoothMesh(openMesh& mesh, int N)
 			mesh.property(cogs, *v_it).vectorize(0.0f);
 			valence = 0;
 
-			for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid() == true; ++vv_it)
+			for (vv_it = mesh.vv_iter(*v_it); vv_it.is_valid()==true; ++vv_it)
 			{
 				mesh.property(cogs, *v_it) += mesh.point(*vv_it);
 				++valence;
@@ -711,8 +1092,9 @@ void MeshDeformation::SmoothMesh(openMesh& mesh, int N)
 			if (valence > 0)
 				mesh.property(cogs, *v_it) /= valence;
 			else
-				mesh.property(cogs, *v_it) = mesh.point(*v_it);
+				mesh.property(cogs,* v_it) = mesh.point(*v_it);
 		}
+
 		for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
 			if (!mesh.is_boundary(*v_it))
 				mesh.set_point(*v_it, mesh.property(cogs, *v_it));
@@ -732,18 +1114,22 @@ void MeshDeformation::OptimizeMesh()
 	CreateDis2Boundary();
 	std::cout << "Createdis2boundary done!" << std::endl;
 
+
 	openMesh::VertexIter          v_it, v_end(deformedMesh.vertices_end());
 	for (v_it = deformedMesh.vertices_begin(); v_it != v_end; ++v_it)
 	{
-		openMesh::Point cur_pt = deformedMesh.point(*v_it);
+		openMesh::Point  cur_pt = deformedMesh.point(*v_it);
 
 		if (!deformedMesh.is_boundary(*v_it) && cur_pt[2] < basePlane)
 		{
 			cur_pt[2] = distance2Boundary[v_it->idx()] * (noiseList[v_it->idx()] + 1) / 2;
 			deformedMesh.set_point(*v_it, cur_pt);
+
 		}
+
 	}
-	//ÕâÀï°ÑdeformedmeshÊä³öÒ»ÏÂ¿´¿´ÊÇÊ²Ã´¶«Î÷
+
+	//ï¿½ï¿½ï¿½ï¿½ï¿½deformedmeshï¿½ï¿½ï¿½Ò»ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½ï¿½ï¿½ï¿½
 	//OpenMesh::IO::write_mesh(deformedMesh,"D:\\yuancodes\\MeshOptimization_2014_2_20\\MeshDeformation\\data\\deformedmesh.off");
 	//getchar();
 }
@@ -755,12 +1141,12 @@ void MeshDeformation::CreateDis2Boundary()
 	openMesh::VertexIter          v_it, v_end(deformedMesh.vertices_end());
 	openMesh::VertexIter          v_it2, v_end2(deformedMesh.vertices_end());
 
-	//ÏÈ°Ñboundaryvertex¶¼´æÆðÀ´
+	//ï¿½È°ï¿½boundaryvertexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	std::vector<openMesh::VertexHandle> boundaryVerList;
 	openMesh::VertexHandle v0;
 	openMesh::HalfedgeHandle heh, heh_init, heh_pre;
 
-	//°Ñboundaryvertex´æÆðÀ´
+	//ï¿½ï¿½boundaryvertexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	for (v_it = constraintMesh.vertices_begin(); v_it != v_end; v_it++)
 	{
 		if (constraintMesh.is_boundary(*v_it))
@@ -783,7 +1169,7 @@ void MeshDeformation::CreateDis2Boundary()
 		boundaryVerList.push_back(v0);
 		heh = constraintMesh.next_halfedge_handle(heh);
 	}
-	//ÏÖÔÚËùÓÐµÄ±ß½çµãÒÑ¾­´æÔÚboundaryverlistÖÐÁË
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ±ß½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½boundaryverlistï¿½ï¿½ï¿½ï¿½
 
 
 	for (v_it = deformedMesh.vertices_begin(); v_it != v_end; ++v_it)
@@ -805,7 +1191,7 @@ void MeshDeformation::CreateDis2Boundary()
 			   //		distance2Boundary[v_it.handle().idx()]=min(distance2Boundary[v_it.handle().idx()],tempDis);
 	  //             }
 			   //}
-		   //Ö±½ÓÔÚboundaryVerListÖÐ¸üÐÂ£¬²»ÓÃÒ»¸öÒ»¸öÕÒ
+		   //Ö±ï¿½ï¿½ï¿½ï¿½boundaryVerListï¿½Ð¸ï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 			for (int i = 0; i < boundaryVerList.size(); i++)
 			{
 				openMesh::Point pt = constraintMesh.point(boundaryVerList[i]);
@@ -827,6 +1213,25 @@ void MeshDeformation::CreateDis2Boundary()
 		//cout<<	distance2Boundary[v_it.handle().idx()]<<endl;
 	}
 }
+
+//void MeshDeformation::DrawDistance()
+//{
+//	if (distance2Boundary == NULL)
+//		return;
+//	openMesh::VertexIter          v_it, v_end(mesh.vertices_end());
+//	glDisable(GL_LIGHTING);
+//	glBegin(GL_POINTS);
+//	int i = 0;
+//	for (v_it = mesh.vertices_begin(); i < mesh.n_vertices(), v_it != v_end; i++, ++v_it)
+//	{
+//		float cur_dis = distance2Boundary[v_it.handle().idx()];
+//		openMesh::Point  cur_pt = mesh.point(v_it);
+//
+//		glColor3f(cur_dis, 1, 0);
+//		glVertex2d(cur_pt[0], cur_pt[1]);
+//	}
+//	glEnd();
+//}
 
 void MeshDeformation::CreateNoiseList()
 {
@@ -857,17 +1262,17 @@ void MeshDeformation::CreateVetexType()
 {
 	if (vertexTypeList == NULL)
 		vertexTypeList = new int[mesh.n_vertices()];
-	openMesh::VertexIter v_it, v_end(mesh.vertices_end());
+	openMesh::VertexIter          v_it, v_end(mesh.vertices_end());
 	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
 	{
-		openMesh::Point meshPt = mesh.point(*v_it);
+		openMesh::Point  meshPt = mesh.point(*v_it);
 		float minDis = 999999;
 		for (int i = 0; i < selectedVertices.size(); i++)
 		{
-			openMesh::Point selectedPt = mesh.point(*(selectedVertices[i]));
-			Vector3f seleVec(selectedPt[0], selectedPt[1], selectedPt[2]);
-			Vector3f meshPtVec(meshPt[0], meshPt[1], meshPt[2]);
-			float  dis = (seleVec - meshPtVec).norm();
+			openMesh::Point  selectedPt = mesh.point(*(selectedVertices[i]));
+			Vector3  seleVec(selectedPt[0], selectedPt[1], selectedPt[2]);
+			Vector3  meshPtVec(meshPt[0], meshPt[1], meshPt[2]);
+			float  dis = Magnitude(seleVec - meshPtVec);
 			minDis = min(minDis, dis);
 		}
 		if (minDis < 0.2)
@@ -947,7 +1352,7 @@ std:sort(initialRandList.begin(), initialRandList.end());
 		int constrain_id = vertexIterList[randList[i]]->idx();
 		openMesh::Point  cons_pt = constraintMesh.point(constraintMeshVerHandleList[constrain_id]);
 
-		Vector3f constrains_coor = Vector3f(pt[0], pt[1], cons_pt[2])*weight;
+		Vector3 constrains_coor = Vector3(pt[0], pt[1], cons_pt[2])*weight;
 		diferentialCoordinateList.push_back(constrains_coor);
 	}
 }
@@ -1002,10 +1407,12 @@ void MeshDeformation::CreateDistance2D()
 		ptList[2 * i + 1] = pt[1];
 	}
 
-	//Éú³ÉdfÀïµÄverlist(±ß½çµã¸öÊý)
+
+	//ï¿½ï¿½ï¿½ï¿½dfï¿½ï¿½ï¿½verlist(ï¿½ß½ï¿½ï¿½ï¿½ï¿½ï¿½)
 	df.CreateVerList(ptList, boundaryVerList.size());
 	//
 	df.CreateDisList();
+
 
 	pixelTypeList = new int[PARTICLE_RES*PARTICLE_RES];
 
@@ -1020,8 +1427,108 @@ void MeshDeformation::CreateDistance2D()
 				pixelTypeList[i*PARTICLE_RES + j] = 0;
 
 		}
+
+
+
 	delete[] ptList;
 }
+
+/*
+void MeshDeformation::DrawDistance2D()
+{
+	df.DrawDistance();
+}
+*/
+
+//void MeshDeformation::DrawHeightField()
+//{
+//	if (frontHF == NULL || behindHF == NULL)
+//		return;
+//
+//	if (pixelTypeList == NULL)
+//		return;
+//
+//	glEnable(GL_LIGHTING);
+//
+//	for (int i = 0; i < PARTICLE_RES - 1; i++)
+//		for (int j = 0; j < PARTICLE_RES - 1; j++)
+//		{
+//			if (pixelTypeList[j*PARTICLE_RES + i] == 1 && pixelTypeList[j*PARTICLE_RES + i + 1] == 1 && pixelTypeList[(j + 1)*PARTICLE_RES + i] == 1 && pixelTypeList[(j + 1)*PARTICLE_RES + i + 1] == 1)
+//			{
+//				float normal0[3], normal1[3], PA[3], PB[3], PC[3], PD[3];
+//				PA[0] = df.GetPos(i, j).x;
+//				PA[1] = df.GetPos(i, j).y;
+//				PA[2] = frontHF[j*PARTICLE_RES + i];
+//				PB[0] = df.GetPos(i + 1, j).x;
+//				PB[1] = df.GetPos(i + 1, j).y;
+//				PB[2] = frontHF[j*PARTICLE_RES + i + 1];
+//				PC[0] = df.GetPos(i + 1, j + 1).x;
+//				PC[1] = df.GetPos(i + 1, j + 1).y;
+//				PC[2] = frontHF[(j + 1)*PARTICLE_RES + i + 1];
+//				PD[0] = df.GetPos(i, j + 1).x;
+//				PD[1] = df.GetPos(i, j + 1).y;
+//				PD[2] = frontHF[(j + 1)*PARTICLE_RES + i];
+//				ComputeTriangleNormal(normal0, PA, PB, PC);
+//				ComputeTriangleNormal(normal1, PA, PC, PD);
+//
+//				glNormal3fv(normal0);
+//				glBegin(GL_TRIANGLES);
+//				glVertex3fv(PA);
+//				glVertex3fv(PB);
+//				glVertex3fv(PC);
+//				glEnd();
+//
+//				glNormal3fv(normal1);
+//				glBegin(GL_TRIANGLES);
+//				glVertex3fv(PA);
+//				glVertex3fv(PC);
+//				glVertex3fv(PD);
+//				glEnd();
+//			}
+//
+//		}
+//
+//	//behind height field
+//
+//	for (int i = 0; i < PARTICLE_RES - 1; i++)
+//		for (int j = 0; j < PARTICLE_RES - 1; j++)
+//		{
+//			if (pixelTypeList[j*PARTICLE_RES + i] == 1 && pixelTypeList[j*PARTICLE_RES + i + 1] == 1 && pixelTypeList[(j + 1)*PARTICLE_RES + i] == 1 && pixelTypeList[(j + 1)*PARTICLE_RES + i + 1] == 1)
+//			{
+//				float normal0[3], normal1[3], PA[3], PB[3], PC[3], PD[3];
+//				PA[0] = df.GetPos(i, j).x;
+//				PA[1] = df.GetPos(i, j).y;
+//				PA[2] = behindHF[j*PARTICLE_RES + i];
+//				PB[0] = df.GetPos(i + 1, j).x;
+//				PB[1] = df.GetPos(i + 1, j).y;
+//				PB[2] = behindHF[j*PARTICLE_RES + i + 1];
+//				PC[0] = df.GetPos(i + 1, j + 1).x;
+//				PC[1] = df.GetPos(i + 1, j + 1).y;
+//				PC[2] = behindHF[(j + 1)*PARTICLE_RES + i + 1];
+//				PD[0] = df.GetPos(i, j + 1).x;
+//				PD[1] = df.GetPos(i, j + 1).y;
+//				PD[2] = behindHF[(j + 1)*PARTICLE_RES + i];
+//				ComputeTriangleNormal(normal0, PA, PC, PB);
+//				ComputeTriangleNormal(normal1, PA, PD, PC);
+//
+//				glNormal3fv(normal0);
+//				glBegin(GL_TRIANGLES);
+//				glVertex3fv(PA);
+//				glVertex3fv(PC);
+//				glVertex3fv(PB);
+//
+//				glEnd();
+//
+//				glNormal3fv(normal1);
+//				glBegin(GL_TRIANGLES);
+//				glVertex3fv(PA);
+//				glVertex3fv(PD);
+//				glVertex3fv(PC);
+//				glEnd();
+//			}
+//
+//		}
+//}
 
 void MeshDeformation::ComputeTriangleNormal(float normal[3], float PA[3], float PB[3], float PC[3])
 {
@@ -1066,21 +1573,21 @@ bool MeshDeformation::isProbabilityGreater(float threshold)
 
 float MeshDeformation::distanceToVolumeBoudary(float x, float y, float z)
 {
-	Vector3f pt(x, y, z);
+	Vector3 pt(x, y, z);
 	float  dis = MAXVAL;
 	for (int i = 0; i < PARTICLE_RES; i++)
 		for (int j = 0; j < PARTICLE_RES; j++)
 		{
 			if (pixelTypeList[i*PARTICLE_RES + j] == 1)
 			{
-				float cur_x = df.GetPos(j, i)[0];
-				float cur_y = df.GetPos(j, i)[1];
-				Vector3f pt_Front = Vector3f(cur_x, cur_y, frontHF[i*PARTICLE_RES + j]);
-				Vector3f pt_Back = Vector3f(cur_x, cur_y, behindHF[i*PARTICLE_RES + j]);
-				float tmpDis = (pt_Front-pt).norm();
+				float cur_x = df.GetPos(j, i).x;
+				float cur_y = df.GetPos(j, i).y;
+				Vector3 pt_Front = Vector3(cur_x, cur_y, frontHF[i*PARTICLE_RES + j]);
+				Vector3 pt_Back = Vector3(cur_x, cur_y, behindHF[i*PARTICLE_RES + j]);
+				float tmpDis = Dist(pt_Front, pt);
 				if (tmpDis < dis)
 					dis = tmpDis;
-				tmpDis = (pt_Back - pt).norm();
+				tmpDis = Dist(pt_Back, pt);
 				if (tmpDis < dis)
 					dis = tmpDis;
 
@@ -1101,7 +1608,7 @@ void MeshDeformation::ExportCloudModel(char* cloudfile)
 
 	for (int i = 0; i < puffNumber; i++)
 	{
-		fwrite(&puffPosVec[i], sizeof(Vector3f), 1, fp);
+		fwrite(&puffPosVec[i], sizeof(Vector3), 1, fp);
 
 	}
 	for (int i = 0; i < puffNumber; i++)
@@ -1110,18 +1617,15 @@ void MeshDeformation::ExportCloudModel(char* cloudfile)
 	}
 	for (int i = 0; i < puffNumber; i++)
 	{
-		float color[4];
-		color[0] = puffColorVec[i].redChannel();
-		color[1] = puffColorVec[i].greenChannel();
-		color[2] = puffColorVec[i].blueChannel();
-		color[3] = puffColorVec[i].alphaChannel();
-		fwrite(&color, 4 * sizeof(float), 1, fp);
+		fwrite(&puffColorVec[i], sizeof(Color4), 1, fp);
 	}
+
 	fclose(fp);
 }
 
 void MeshDeformation::CloudSampling()
 {
+
 	float smallValue = 1.2;
 	float bigValue = 1.5;
 
@@ -1157,8 +1661,10 @@ void MeshDeformation::CloudSampling()
 				}
 				else
 				{
+
 					disField[i*PARTICLE_RES*PARTICLE_RES + j*PARTICLE_RES + k] = 0.002;
 				}
+
 			}
 
 
@@ -1178,7 +1684,7 @@ void MeshDeformation::CloudSampling()
 					float normalDis = disField[i*PARTICLE_RES*PARTICLE_RES + j*PARTICLE_RES + k] / maxDis;
 					if (isProbabilityGreater(normalDis))
 					{
-						Vector3f curPuf;
+						Vector3 curPuf;
 						//scale means  the extent of  x or y of cloud puff in [ -scale,scale ]
 
 						int  seed = rand() % 99999;
@@ -1192,9 +1698,9 @@ void MeshDeformation::CloudSampling()
 						//disturb2=0;
 
 
-						curPuf[0] = scale*(x + disturb0*interval);
-						curPuf[1] = scale*(y + disturb1*interval);
-						curPuf[2] = scale*(z + disturb2*interval);
+						curPuf.x = scale*(x + disturb0*interval);
+						curPuf.y = scale*(y + disturb1*interval);
+						curPuf.z = scale*(z + disturb2*interval);
 
 						puffPosVec.push_back(curPuf);
 
@@ -1204,8 +1710,9 @@ void MeshDeformation::CloudSampling()
 
 						puffSizeVec.push_back(puffSize);
 
-						Color4f color(1.0, 0.0, 0.0, 1.0);
-					    puffColorVec.push_back(color);
+						Color4  color(1.0, 0.0, 0.0, 1.0);
+
+						puffColorVec.push_back(color);
 					}
 				}
 
@@ -1225,6 +1732,67 @@ void MeshDeformation::CloudSampling()
 
 	cout << "cloud sampling---------------done!" << endl;
 }
+
+//void MeshDeformation::DrawConstraintMesh()
+//{
+//	glEnable(GL_LIGHTING);
+//
+//	constraintMesh.update_normals();
+//
+//	openMesh::FaceIter          f_it, f_end(constraintMesh.faces_end());
+//	for (f_it = constraintMesh.faces_begin(); f_it != f_end; ++f_it)
+//	{
+//		openMesh::FaceVertexIter  fv_it, fv_end(constraintMesh.fv_end(f_it));
+//
+//		openMesh::Normal   normal = constraintMesh.normal(f_it);
+//		Vector3  normalVec(normal[0], normal[1], normal[2]);
+//		glNormal3fv(!normalVec);
+//		glBegin(GL_POLYGON);
+//		for (fv_it = constraintMesh.fv_begin(f_it); fv_it != fv_end; ++fv_it)
+//		{
+//			openMesh::Point  pt = constraintMesh.point(fv_it);
+//			Vector3 ver(pt[0], pt[1], pt[2]);
+//			glVertex3fv(!ver);
+//
+//		}
+//		glEnd();
+//
+//
+//	}
+//
+//
+//
+//	glPointSize(3.0);
+//
+//	glDisable(GL_LIGHTING);
+//	glColor3f(1, 0, 0);
+//	glBegin(GL_POINTS);
+//	openMesh::VertexIter          v_it, v_end(constraintMesh.vertices_end());
+//	for (v_it = constraintMesh.vertices_begin(); v_it != v_end; ++v_it)
+//	{
+//		if (constraintMesh.is_boundary(v_it))
+//		{
+//			openMesh::Point  pt = constraintMesh.point(v_it);
+//			Vector3 ver(pt[0], pt[1], pt[2]);
+//			glColor3f(1, 0, 0);
+//			glVertex3fv(!ver);
+//		}
+//
+//	}
+//	glEnd();
+//
+//
+//	glBegin(GL_POINTS);
+//	for (int i = 0; i < constraintVerList.size(); i++)
+//	{
+//		openMesh::Point  cur_pt = constraintMesh.point(constraintMeshVerHandleList[constraintVerList[i].idx()]);
+//		Vector3 ver(cur_pt[0], cur_pt[1], cur_pt[2]);
+//		glColor3f(0, 1, 0);
+//		glVertex3fv(!ver);
+//
+//	}
+//	glEnd();
+//}
 
 void MeshDeformation::CreateOptimizedMesh(int loop)
 {
@@ -1247,6 +1815,7 @@ void MeshDeformation::CreateOptimizedMesh(int loop)
 		std::cout << "little step 7: optimize mesh" << std::endl;
 		OptimizeMesh();
 		std::cout << "Iterative step " << i << " done!" << std::endl;
+
 	}
 }
 
@@ -1258,7 +1827,7 @@ void MeshDeformation::UpdateConstraintMesh(int loop)
 		int nv = constraintMesh.n_vertices();
 		std::cout << "constraintMesh has " << nv << " vertices!" << std::endl;
 		//compute the distance to the boundary for all interior vertices.
-		//ÏÈ°Ñboundaryvertex¶¼´æÆðÀ´
+		//ï¿½È°ï¿½boundaryvertexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		std::vector<openMesh::VertexHandle> boundaryVerList;
 		openMesh::VertexHandle v0;
 		openMesh::HalfedgeHandle heh, heh_init, heh_pre;
@@ -1269,7 +1838,7 @@ void MeshDeformation::UpdateConstraintMesh(int loop)
 		v_it = constraintMesh.vertices_begin();
 		//cout << *v_it << endl;
 		//cout << *v_end << endl;
-		//°Ñboundaryvertex´æÆðÀ´
+		//ï¿½ï¿½boundaryvertexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		for (v_it = constraintMesh.vertices_begin(); v_it != v_end; v_it++)
 		{
 			if (!constraintMesh.is_boundary(*v_it))
@@ -1296,7 +1865,7 @@ void MeshDeformation::UpdateConstraintMesh(int loop)
 			heh = constraintMesh.next_halfedge_handle(heh);
 		}
 		std::cout << "All " << boundaryVerList.size() << " boundary vertex have been found!" << std::endl;
-		//ÏÖÔÚËùÓÐµÄ±ß½çµãÒÑ¾­´æÔÚboundaryverlistÖÐÁË
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ±ß½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½boundaryverlistï¿½ï¿½ï¿½ï¿½
 
 		int ncount = 0;
 
@@ -1323,7 +1892,7 @@ void MeshDeformation::UpdateConstraintMesh(int loop)
 						distance2Boundary_[v_it.handle().idx()]=min(distance2Boundary_[v_it.handle().idx()],tempDis);
 					}
 				}*/
-				//Ö±½ÓÔÚboundaryVerListÖÐ¸üÐÂ£¬²»ÓÃÒ»¸öÒ»¸öÕÒ
+				//Ö±ï¿½ï¿½ï¿½ï¿½boundaryVerListï¿½Ð¸ï¿½ï¿½Â£ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 				for (int i = 0; i < boundaryVerList.size(); i++)
 				{
 					openMesh::Point pt = constraintMesh.point(boundaryVerList[i]);
@@ -1354,7 +1923,7 @@ void MeshDeformation::UpdateConstraintMesh(int loop)
 			cur_pt[2] = distance2Boundary_[v_it->idx()];
 			constraintMesh.set_point(*v_it, cur_pt);
 		}
-		//ÕâÀï°ÑconstraintMeshÊä³öÒ»ÏÂ¿´¿´ÊÇÊ²Ã´¶«Î÷
+		//ï¿½ï¿½ï¿½ï¿½ï¿½constraintMeshï¿½ï¿½ï¿½Ò»ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½ï¿½ï¿½ï¿½
 		//OpenMesh::IO::write_mesh(constraintMesh,"D:\\yuancodes\\MeshOptimization_2014_2_20\\MeshDeformation\\data\\constraintmesh.off");
 		//getchar();
 
@@ -1372,7 +1941,7 @@ void MeshDeformation::UpdateConstraintMesh(int loop)
 			constraintMesh.set_point(constraintMeshVerHandleList[v_it->idx()], cur_pt);
 		}
 
-		//ÕâÀï°ÑconstraintMeshÊä³öÒ»ÏÂ¿´¿´ÊÇÊ²Ã´¶«Î÷
+		//ï¿½ï¿½ï¿½ï¿½ï¿½constraintMeshï¿½ï¿½ï¿½Ò»ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½ï¿½ï¿½ï¿½
 		//OpenMesh::IO::write_mesh(constraintMesh,"D:\\yuancodes\\MeshOptimization_2014_2_20\\MeshDeformation\\data\\constraintmesh.off");
 		//getchar();
 
@@ -1420,7 +1989,7 @@ void MeshDeformation::CloudSamplingSimulation(char* simulationData)
 
 					float normalDis = 0.5;
 
-					Vector3f curPuf;
+					Vector3 curPuf;
 					//scale means  the extent of  x or y of cloud puff in [ -scale,scale ]
 					int  seed = rand() % 99999;
 					srand(seed);
@@ -1432,9 +2001,9 @@ void MeshDeformation::CloudSamplingSimulation(char* simulationData)
 					disturb1 = 0;
 					disturb2 = 0;
 
-					curPuf[0] = scale*(x + disturb0*interval);
-					curPuf[1] = scale*(z + disturb1*interval);
-					curPuf[2] = scale*(y + disturb2*interval);
+					curPuf.x = scale*(x + disturb0*interval);
+					curPuf.y = scale*(z + disturb1*interval);
+					curPuf.z = scale*(y + disturb2*interval);
 
 					puffPosVec.push_back(curPuf);
 
@@ -1444,7 +2013,8 @@ void MeshDeformation::CloudSamplingSimulation(char* simulationData)
 
 					puffSizeVec.push_back(puffSize);
 
-					Color4f color(1.0, 0.0, 0.0, 1.0);
+					Color4  color(1.0, 0.0, 0.0, 1.0);
+
 					puffColorVec.push_back(color);
 				}
 
@@ -1463,14 +2033,19 @@ void MeshDeformation::CloudSamplingSimulation(char* simulationData)
 	delete[] disField;
 
 	cout << "cloud sampling---------------done!" << endl;
+
+
+
 }
+
 
 void MeshDeformation::ScaleMesh(openMesh& mesh, float x, float y, float z)
 {
+
 	openMesh::VertexIter v_it, v_end(mesh.vertices_end());
 	for (v_it = mesh.vertices_begin(); v_it != v_end; ++v_it)
 	{
-		openMesh::Point pt = mesh.point(*v_it);
+		openMesh::Point  pt = mesh.point(*v_it);
 		pt[0] *= x;
 		pt[1] *= y;
 		pt[2] *= z;

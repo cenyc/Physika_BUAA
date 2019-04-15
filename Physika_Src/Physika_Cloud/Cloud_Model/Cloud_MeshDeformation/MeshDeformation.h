@@ -1,16 +1,14 @@
-
 #pragma once
-//#include "Color.h"
-#include <Physika_Render\Color\color.h>
-#include "Physika_Core\Vectors\vector_3d.h"
+#include "Color.h"
+#include "Vector.h"
 #include "DistanceField2D.h"
 using namespace std;
-using namespace Physika;
-struct  MatElement
+
+struct MatElement
 {
 	int row;
 	int col;
-	float element_value;
+	float  element_value;
 
 	MatElement(int r, int c, float va)
 	{
@@ -31,29 +29,35 @@ public:
 
 	void UpdateConstraintMesh(int loop);
 
-	int CreateMesh(char* offfile);
+	int CreateMesh(string offfile);
 	vector<openMesh::VertexHandle>  boundaryVerList;
 	void CreateBoundaryList();
 
-	//for cloud base plane
+	//for  cloud base plane
 	DistanceField2D df;
 	void CreateDistance2D();
 	void DrawDistance2D();
 
 
-	void ClearMesh(openMesh& mesh);
+	void ClearMesh(openMesh&  mesh);
 	void NormalizeMesh();
 	void NormalizeMesh(openMesh& mesh);
 	void ScaleMesh(openMesh& mesh, float x, float y, float z);
 
+	//void DrawMesh();
+	//void DrawDeformedMesh();
+	//void DrawConstraintMesh();
+
 	vector<MatElement> laplaceMat;
 	void CreateLaplaceMatrix();
-	vector<Vector3f> diferentialCoordinateList;
+	vector<Vector3> diferentialCoordinateList;
 	void CreateDifCoorList();
+
 
 	int* vertexTypeList;  //0-static, 1-free, 2-anchor
 	void CreateVetexType();
 	void AddConstrains();
+
 
 	float basePlane;
 
@@ -62,9 +66,11 @@ public:
 	float boundary_weight;
 	float interior_weight;
 
-	int  N_cons;
+
+	int N_cons;
 	void AddInteriorConstrainst();
 	vector<openMesh::VertexHandle> constraintVerList;
+
 
 	float diff_z_scale;
 	bool UpdateMesh();
@@ -76,11 +82,12 @@ public:
 	//void DrawDistance();
 	void OptimizeMesh();
 
+
 	void CreateOptimizedMesh(int loop);
 
 	// front and behind height field
-	float*  frontHF;
-	float*  behindHF;
+	float* frontHF;
+	float* behindHF;
 	int* pixelTypeList;
 	//void DrawHeightField();     
 	void ComputeTriangleNormal(float normal[3], float PA[3], float PB[3], float PC[3]);
@@ -89,34 +96,42 @@ public:
 	float weight_dobashi;
 	void CreateEntireHeightFieldAndMesh();
 
+
 	//cloud data file
 	int puffNumber;
-	vector<Vector3f> puffPosVec;
+	vector<Vector3>  puffPosVec;
 	vector<float> puffSizeVec;
-	vector<Color4f> puffColorVec;
+	vector<Color4> puffColorVec;
 	void CloudSampling();
 	void CloudSamplingSimulation(char* simulationData);
-	float  distanceToVolumeBoudary(float x, float y, float z);
+	float distanceToVolumeBoudary(float x, float y, float z);
 	bool isProbabilityGreater(float threahold);
 	//output cloud model: cloudxx.dat 
 	void ExportCloudModel(char* cloudfile);
 
+
 	void Smooth();
 	void SmoothMesh(openMesh& mesh, int N);
 
-	void MoveCurSelectedVertex(Vector3f direction, float dis);
+
+	void MoveCurSelectedVertex(Vector3 direction, float dis);
 
 	vector<openMesh::VertexIter> selectedVertices;
+	//void SelectVertex(int x, int y);
+	//void  DrawSelectedVertices();
+	//Vector3 GetPixelLoc(float x, float y, float z);
 
-	bool  OutputDeformedMesh(char* meshfile);  //"output.off"
-	bool  OutputTempMesh(char* meshfile);  //"output_temp.off"
+	//void  Draw(DrawType dType);
+
+	bool OutputDeformedMesh(string meshfile);  //"output.off"
+	bool OutputTempMesh(char* meshfile);  //"output_temp.off"
 	~MeshDeformation(void);
 
 	struct pixelStuct
 	{
-		Vector3f pixel;
-		openMesh::VertexIter v_it;
-		pixelStuct(Vector3f pixel, openMesh::VertexIter v_it)
+		Vector3   pixel;
+		openMesh::VertexIter  v_it;
+		pixelStuct(Vector3 pixel, openMesh::VertexIter  v_it)
 		{
 			this->pixel = pixel;
 			this->v_it = v_it;

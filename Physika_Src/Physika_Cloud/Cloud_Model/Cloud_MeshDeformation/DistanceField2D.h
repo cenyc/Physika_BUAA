@@ -1,9 +1,9 @@
 #pragma once
 /* Vertex structure */ 
-#include "precompiled.h"
-#include "Physika_Core\Vectors\vector_3d.h"
-#include "Physika_Core\Vectors\vector_2d.h"
-using namespace Physika;
+#include "total.h"
+#include "Vector.h"
+//#include <gl\glut.h>
+
 enum DrawType{InputMesh,ConstraintMesh,CloudPIxelOnBasePlane,Distance,Height, DeformedMesh};
 
 typedef struct 
@@ -43,11 +43,12 @@ public:
 	int nVer;
 	void CreateVerList(float* ptList, int verNumber);
 	float GetDistance(int idx, int idy);
-	Vector2f GetPos(int idx, int idy);
+	Vector2 GetPos(int idx, int idy);
 
 	//distance field 
 	float* disList;
 	void CreateDisList();
+	void DrawDistance();
 	float  InterPolate(float x, float y);
 
 public:
