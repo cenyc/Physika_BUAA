@@ -1,12 +1,10 @@
 #pragma once
-#include <Physika_Render\Color\color.h>
+#include "Color.h"
 #include "Image.h"
 #include "Pixel.h"
-using namespace Physika;
-
 class Sky {
 public:
-	Color4f* img_sky;
+	Color3* img_sky;
 	float*  img_grey_sky;
 	Sky();
 	void Initial();

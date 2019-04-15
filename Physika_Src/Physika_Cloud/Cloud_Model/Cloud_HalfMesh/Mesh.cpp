@@ -1,5 +1,5 @@
+#pragma once
 #include "Mesh.h"
-
 #include"delaunay.h"
 #include"edge.h"
 #include"numeric.h"
@@ -83,8 +83,8 @@ void Mesh::CreatBaseMesh()
 	ver_number = final_points.size();
 	for (int i = 0; i < ver_number; i++){
 		float x, y;
-		x = final_points[i][0];
-		y = final_points[i][1];
+		x = final_points[i].x;
+		y = final_points[i].y;
 		generate_mesh::Vector2<float> position(x, y);
 		points.push_back(position);
 	}
@@ -107,7 +107,7 @@ void Mesh::CreatBaseMesh()
 
 	//三角形三边找点的索引
 	int x = 0;
-	vector<Vector3i> face_vector;
+	vector<Vector3> face_vector;
 	for (unsigned i = 0; i < triangles.size(); i++){
 		int index1 = 0, index2 = 0, index3 = 0;
 		for (int j = 0; j < ver_number; j++){
@@ -137,10 +137,10 @@ void Mesh::CreatBaseMesh()
 			continue;
 		}
 		else{
-			Vector3i face_index;
-			face_index[0] = index1;
-			face_index[1] = index3;
-			face_index[2] = index2;
+			Vector3 face_index;
+			face_index.x = index1;
+			face_index.y = index3;
+			face_index.z = index2;
 			//cout << index1 << " " << index3 << " " << index2 << endl;
 			face_vector.push_back(face_index);
 			x++;
@@ -153,9 +153,9 @@ void Mesh::CreatBaseMesh()
 	faceList = new int[face_vector.size() * 4];
 	for (int i = 0; i < face_vector.size(); i++){
 		faceList[4 * i + 0] = 3;
-		faceList[4 * i + 1] = face_vector[i][0];
-		faceList[4 * i + 2] = face_vector[i][1];
-		faceList[4 * i + 3] = face_vector[i][2];
+		faceList[4 * i + 1] = face_vector[i].x;
+		faceList[4 * i + 2] = face_vector[i].y;
+		faceList[4 * i + 3] = face_vector[i].z;
 		//cout << faceList[4 * i + 0] << " "<<faceList[4 * i + 1] << " " << faceList[4 * i + 2] << " "<<faceList[4 * i + 3] << endl;
 	}
 

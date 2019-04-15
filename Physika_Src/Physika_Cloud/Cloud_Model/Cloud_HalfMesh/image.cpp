@@ -1,3 +1,4 @@
+#pragma once
 #include "Image.h"
 
 Image::Image()
@@ -22,7 +23,7 @@ void Image::ReadImage(char* imgfile, Tool tool)
 	img_width = pImg->width;
 	img_height = pImg->height;
 	img_maxWH = img_width>img_height ? img_width : img_height;
-	img_mat_cor = new Color4f[img_width*img_height];//初始化色彩矩阵，数组中每一个元素都是color3的示例对象
+	img_mat_cor = new Color3[img_width*img_height];//初始化色彩矩阵，数组中每一个元素都是color3的示例对象
 
 												   //allocate memory for img_mat_cor
 	if (img_mat_cor == NULL)
@@ -36,13 +37,9 @@ void Image::ReadImage(char* imgfile, Tool tool)
 		{
 			CvScalar cs;//CvScalar是一个可以用来存放4个double数值的数组。
 			cs = cvGet2D(pImg, i, j);
-			//img_mat_cor[i*img_width + j].R = cs.val[2] / 255;
-			//img_mat_cor[i*img_width + j].G = cs.val[1] / 255;
-			//img_mat_cor[i*img_width + j].B = cs.val[0] / 255;//为什么要除以255
-
-			img_mat_cor[i*img_width + j].setRedChannel(cs.val[2] / 255);
-			img_mat_cor[i*img_width + j].setGreenChannel(cs.val[1] / 255);
-			img_mat_cor[i*img_width + j].setBlueChannel(cs.val[0] / 255);
+			img_mat_cor[i*img_width + j].R = cs.val[2] / 255;
+			img_mat_cor[i*img_width + j].G = cs.val[1] / 255;
+			img_mat_cor[i*img_width + j].B = cs.val[0] / 255;//为什么要除以255
 		}
 
 	////方法一：使用cvGet2D()函数间接访问，若是彩色图，就是3通道图像，获取的就是每一个像素点的BGR值，然后分别获取B值，G值和R值
@@ -92,7 +89,7 @@ int Image::GetImg_maxWH()
 	return this -> img_maxWH;
 }
 
-Color4f* Image::GetImg_mat_cor()
+Color3* Image::GetImg_mat_cor()
 {
 	return this->img_mat_cor;
 }

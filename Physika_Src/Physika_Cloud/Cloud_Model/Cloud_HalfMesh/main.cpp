@@ -1,3 +1,4 @@
+#pragma once
 #include "global.h"
 #include "Image.h"
 #include "Pixel.h"
@@ -23,7 +24,7 @@ void main() {
 	//--------
 	sky.Initial();
 	cloud.Initial();
-	image.ReadImage("./test1.jpg", tool);
+	image.ReadImage("./test1.png", tool);
 	pixel.CreatePixelType(image, tool);
 	sun.CreateSunColor(pixel, image);
 	pixel.CreatePerfectBoundary(image, mesh);

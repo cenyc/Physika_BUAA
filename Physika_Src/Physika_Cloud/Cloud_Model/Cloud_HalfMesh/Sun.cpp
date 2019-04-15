@@ -1,3 +1,4 @@
+#pragma once
 #include "Sun.h"
 #include <algorithm>
 Sun::Sun()
@@ -20,7 +21,7 @@ void Sun::CreateSunColor(Pixel pixel, Image image)
 		int row;
 		int col;
 		float  gray;
-		Color4f  color;
+		Color3  color;
 
 		bool operator <(const PixelIFO& other)
 		{
@@ -54,29 +55,20 @@ void Sun::CreateSunColor(Pixel pixel, Image image)
 
 	int  brighter_Number = cloudIfoList.size()*brighter_ratio;
 
-	Color4f avg_cor = Color4f(0, 0, 0);
+	Color3 avg_cor = Color3(0, 0, 0);
 	for (int i = 0; i < brighter_Number; i++)
 	{
 		int idx = cloudIfoList[i].col;
 		int idy = cloudIfoList[i].row;
+		avg_cor += image.GetImg_mat_cor()[idy*image.GetImg_width() + idx];
 
-		//avg_cor += image.GetImg_mat_cor()[idy*image.GetImg_width() + idx];
-
-		avg_cor.setRedChannel(avg_cor.redChannel() + image.GetImg_mat_cor()[idy*image.GetImg_width() + idx].redChannel());
-		avg_cor.setGreenChannel(avg_cor.greenChannel() + image.GetImg_mat_cor()[idy*image.GetImg_width() + idx].greenChannel());
-		avg_cor.setBlueChannel(avg_cor.blueChannel() + image.GetImg_mat_cor()[idy*image.GetImg_width() + idx].blueChannel());
 	}
 
-	//avg_cor.R /= brighter_Number;
-	//avg_cor.G /= brighter_Number;
-	//avg_cor.B /= brighter_Number;
-
-	avg_cor.setRedChannel(avg_cor.redChannel() / brighter_Number);
-	avg_cor.setGreenChannel(avg_cor.greenChannel() / brighter_Number);
-	avg_cor.setBlueChannel(avg_cor.blueChannel() / brighter_Number);
-
+	avg_cor.R /= brighter_Number;
+	avg_cor.G /= brighter_Number;
+	avg_cor.B /= brighter_Number;
 	ofstream out("./suncolor_test.txt");
-	out << "Sun Color: " << avg_cor.redChannel() << " " << avg_cor.greenChannel() << " " << avg_cor.blueChannel() << endl;
+	out << "Sun Color: " << avg_cor.R << " " << avg_cor.G << " " << avg_cor.B << endl;
 
 
 	sun_color = avg_cor;//¼ÆËãÌ«ÑôÉ«²Ê
@@ -97,17 +89,12 @@ void Sun::CreateSun(float theta, float phi)
 	thetaSunUV = theta;
 	phiSunUV = phi;
 
-	//-----------------
-	SunVecUV -= SunVecUV;
-	Vector3f temp(sin(theta)*cos(phi), cos(theta), sin(theta)*sin(phi));
-	SunVecUV += temp;
-
-	/*SunVecUV.x = sin(theta)*cos(phi);
+	SunVecUV.x = sin(theta)*cos(phi);
 	SunVecUV.z = sin(theta)*sin(phi);
-	SunVecUV.y = cos(theta);*/
+	SunVecUV.y = cos(theta);
 }
 
-Vector3f Sun::GetSunVecUV()
+Vector3 Sun::GetSunVecUV()
 {
 	return this ->SunVecUV;
 }

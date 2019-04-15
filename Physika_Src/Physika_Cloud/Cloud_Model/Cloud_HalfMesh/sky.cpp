@@ -1,3 +1,4 @@
+#pragma once
 #include "sky.h"
 
 Sky::Sky()
@@ -55,10 +56,10 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 		}
 
 
-	img_sky = new Color4f[image.GetImg_width()*image.GetImg_height()];
-	Color4f*  tempCor = new Color4f[image.GetImg_width()*image.GetImg_height()];
+	img_sky = new Color3[image.GetImg_width()*image.GetImg_height()];
+	Color3*  tempCor = new Color3[image.GetImg_width()*image.GetImg_height()];
 
-	Color4f avgSky(0, 0, 0);		//average sky color		
+	Color3 avgSky(0, 0, 0);		//average sky color		
 	int skycount = 0;
 	int cloudPixelCount = 0;
 	for (int i = 0; i<image.GetImg_width()*image.GetImg_height(); i++)
@@ -66,25 +67,14 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 		if (isSkyPixelList[i] == 1)
 		{
 			img_sky[i] = image.GetImg_mat_cor()[i];
-
-			//avgSky += image.GetImg_mat_cor()[i];
-
-			avgSky.setRedChannel(avgSky.redChannel() + image.GetImg_mat_cor()[i].redChannel());
-			avgSky.setGreenChannel(avgSky.greenChannel() + image.GetImg_mat_cor()[i].greenChannel());
-			avgSky.setBlueChannel(avgSky.blueChannel() + image.GetImg_mat_cor()[i].blueChannel());
-
+			avgSky += image.GetImg_mat_cor()[i];
 			skycount++;
 		}
 
 
 	}
-	//avgSky = avgSky*(1.0 / skycount);
-
-	avgSky.setRedChannel(avgSky.redChannel()*(1.0 / skycount));
-	avgSky.setGreenChannel(avgSky.greenChannel()*(1.0 / skycount));
-	avgSky.setBlueChannel(avgSky.blueChannel()*(1.0 / skycount));
-
-	avgSky = Color4f(0.02, 0.02, 0.02);
+	avgSky = avgSky*(1.0 / skycount);
+	avgSky = Color3(0.02, 0.02, 0.02);
 
 	//set colors of cloud  pixel to avgsky
 	cloudPixelCount = 0;
@@ -110,7 +100,7 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 	{
 		for (int i = 0; i<image.GetImg_width()*image.GetImg_height(); i++)
 		{
-			tempCor[i] = Color4f(0, 0, 0);
+			tempCor[i] = Color3(0, 0, 0);
 		}
 
 		for (int i = 0; i<image.GetImg_height(); i++)
@@ -130,23 +120,9 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 								if (idx>0 && idx<image.GetImg_width()&&idy>0 && idy<image.GetImg_height())
 								{
 									if (isSkyPixelList[idy*image.GetImg_width() + idx] == 1)
-									{
-										//tempCor[i*image.GetImg_width() + j] += image.GetImg_mat_cor()[idy*image.GetImg_width() + idx];
-
-										tempCor[i*image.GetImg_width() + j].setRedChannel(tempCor[i*image.GetImg_width() + j].redChannel() + image.GetImg_mat_cor()[idy*image.GetImg_width() + idx].redChannel());
-										tempCor[i*image.GetImg_width() + j].setGreenChannel(tempCor[i*image.GetImg_width() + j].greenChannel() + image.GetImg_mat_cor()[idy*image.GetImg_width() + idx].greenChannel());
-										tempCor[i*image.GetImg_width() + j].setBlueChannel(tempCor[i*image.GetImg_width() + j].blueChannel() + image.GetImg_mat_cor()[idy*image.GetImg_width() + idx].blueChannel());
-									}
-										
+										tempCor[i*image.GetImg_width() + j] += image.GetImg_mat_cor()[idy*image.GetImg_width() + idx];
 									else
-									{
-										//tempCor[i*image.GetImg_width() + j] += img_sky[idy*image.GetImg_width() + idx];
-
-										tempCor[i*image.GetImg_width() + j].setRedChannel(tempCor[i*image.GetImg_width() + j].redChannel() + img_sky[idy*image.GetImg_width() + idx].redChannel());
-										tempCor[i*image.GetImg_width() + j].setGreenChannel(tempCor[i*image.GetImg_width() + j].greenChannel() + img_sky[idy*image.GetImg_width() + idx].greenChannel());
-										tempCor[i*image.GetImg_width() + j].setBlueChannel(tempCor[i*image.GetImg_width() + j].blueChannel() + img_sky[idy*image.GetImg_width() + idx].blueChannel());
-									}
-										
+										tempCor[i*image.GetImg_width() + j] += img_sky[idy*image.GetImg_width() + idx];
 
 									neighorcount++;
 
@@ -154,18 +130,10 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 							}
 						}
 
-					//Color4f temp = tempCor[i*image.GetImg_width() + j] * (1.0 / neighorcount);
+					Color3 temp = tempCor[i*image.GetImg_width() + j] * (1.0 / neighorcount);
+					tempCor[i*image.GetImg_width() + j] = tempCor[i*image.GetImg_width() + j] * (1.0 / neighorcount);
 
-					Color4f temp;
-					temp.setRedChannel(tempCor[i*image.GetImg_width() + j].redChannel()*(1.0 / neighorcount));
-					temp.setGreenChannel(tempCor[i*image.GetImg_width() + j].greenChannel()*(1.0 / neighorcount));
-					temp.setBlueChannel(tempCor[i*image.GetImg_width() + j].blueChannel()*(1.0 / neighorcount));
 
-					//tempCor[i*image.GetImg_width() + j] = tempCor[i*image.GetImg_width() + j] * (1.0 / neighorcount);
-
-					tempCor[i*image.GetImg_width() + j].setRedChannel(tempCor[i*image.GetImg_width() + j].redChannel()*(1.0 / neighorcount));
-					tempCor[i*image.GetImg_width() + j].setGreenChannel(tempCor[i*image.GetImg_width() + j].greenChannel()*(1.0 / neighorcount));
-					tempCor[i*image.GetImg_width() + j].setBlueChannel(tempCor[i*image.GetImg_width() + j].blueChannel()*(1.0 / neighorcount));
 				}
 
 			}
@@ -175,16 +143,8 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 		{
 			if (isSkyPixelList[i] == 0)
 			{
-				//Color4f difCor = tempCor[i] - img_sky[i];
-
-				Color4f difCor;
-				difCor.setRedChannel(tempCor[i].redChannel() - img_sky[i].redChannel());
-				difCor.setGreenChannel(tempCor[i].greenChannel() - img_sky[i].greenChannel());
-				difCor.setBlueChannel(tempCor[i].blueChannel() - img_sky[i].blueChannel());
-
-				curError += difCor.redChannel()*difCor.redChannel() + difCor.greenChannel()*difCor.greenChannel() + difCor.blueChannel()*difCor.blueChannel();
-
-
+				Color3 difCor = tempCor[i] - img_sky[i];
+				curError += difCor.R*difCor.R + difCor.G*difCor.G + difCor.B*difCor.B;
 
 			}
 		}
@@ -215,9 +175,9 @@ void Sky::CreateSkyPossion(Image image, Pixel pixel)//利用插值法构造天空场景，保
 	for (int i = 0; i<image.GetImg_height(); i++)
 		for (int j = 0; j<image.GetImg_width(); j++)
 		{
-			float R = img_sky[i*image.GetImg_width() + j].redChannel();
-			float G = img_sky[i*image.GetImg_width() + j].greenChannel();
-			float B = img_sky[i*image.GetImg_width() + j].blueChannel();
+			float R = img_sky[i*image.GetImg_width() + j].R;
+			float G = img_sky[i*image.GetImg_width() + j].G;
+			float B = img_sky[i*image.GetImg_width() + j].B;
 			img_grey_sky[i*image.GetImg_width() + j] = 0.2989 * R + 0.5870 * G + 0.1140 * B;//0.2989 * R + 0.5870 * G + 0.1140 * B ;
 
 		}

@@ -1,3 +1,4 @@
+#pragma once
 #include "Pixel.h"
 #include "POINT.h"
 #include <algorithm>
@@ -55,27 +56,8 @@ void Pixel::CreatePixelType(Image image, Tool tool)
 		for (int j = 0; j<image.GetImg_width(); j++)
 		{
 
-			Color4f color = image.GetImg_mat_cor()[i*image.GetImg_width() + j];
-
-			//---------------------------------------------------------------------------------
-			float tempMax = -99999;
-			if (tempMax<color.redChannel())
-				tempMax = color.redChannel();
-			if (tempMax<color.greenChannel())
-				tempMax = color.greenChannel();
-			if (tempMax<color.blueChannel())
-				tempMax = color.blueChannel();
-
-			float tempMin = 99999;
-			if (tempMin>color.redChannel())
-				tempMin = color.redChannel();
-			if (tempMin>color.greenChannel())
-				tempMin = color.greenChannel();
-			if (tempMin>color.blueChannel())
-				tempMin = color.blueChannel();
-			//----------------------------------------------------------------------------------
-
-			if ((tempMax - tempMin) / tempMax<seg_thresh)//seg_thresh应该是设置的阈值，分离出云和天空
+			Color3 color = image.GetImg_mat_cor()[i*image.GetImg_width() + j];
+			if ((color.maxPart() - color.minPart()) / color.maxPart()<seg_thresh)//seg_thresh应该是设置的阈值，分离出云和天空
 			{
 				pixelTypeList[i*image.GetImg_width() + j] = 1;
 				cloudPixelCount++;
@@ -139,7 +121,7 @@ void Pixel::CreatePixelType(Image image, Tool tool)
 		}
 
 	delete[] CloudBoudaryPixelList;
-	ofstream out("E:/代码/mesh_x/output/pixelifo_test.txt");
+	ofstream out("./pixelifo_test.txt");
 	out << 414 << endl;
 	for (int i = 0; i<image.GetImg_height(); i++)
 		for (int j = 0; j<image.GetImg_width(); j++)
@@ -182,15 +164,12 @@ void Pixel::CreatePerfectBoundary(Image image, Mesh &mesh)
 					count++;
 					//在云内部，每隔五个像素取一次（可更改来调节生成的mesh精细程度）
 					if (count % 5 == 0){
-						//-------------------------------
-						Vector2f point(j*1.0f / image.img_maxWH, (image.GetImg_height() - i)*1.0f / image.img_maxWH);
-
-						//float x, y;
-						//y = (image.GetImg_height() - i)*1.0f / image.img_maxWH;
-						//x = j*1.0f / image.img_maxWH;
-						//Vector2f point;
-						//point.x = x;
-						//point.y = y;
+						float x, y;
+						y = (image.GetImg_height() - i)*1.0f / image.img_maxWH;
+						x = j*1.0f / image.img_maxWH;
+						Vector2 point;
+						point.x = x;
+						point.y = y;
 						mesh.midPoint.push_back(point);
 					}
 				}
@@ -366,12 +345,9 @@ void Pixel::CreatePerfectBoundary(Image image, Mesh &mesh)
 
 	//将轮廓点导入最终点集中
 	for (int i = 0; i < boundaryPixel_number - 1; i++){
-		//----------------------------------
-		Vector2f point(boundaryVertexList[2 * i + 0], boundaryVertexList[2 * i + 1]);
-
-		//Vector2 point;
-		//point.x = boundaryVertexList[2 * i + 0];
-		//point.y = boundaryVertexList[2 * i + 1];
+		Vector2 point;
+		point.x = boundaryVertexList[2 * i + 0];
+		point.y = boundaryVertexList[2 * i + 1];
 		mesh.final_points.push_back(point);
 	}
 
@@ -381,7 +357,7 @@ void Pixel::CreatePerfectBoundary(Image image, Mesh &mesh)
 	for (int i = 0; i < mesh.midPoint.size(); i++){
 		int j;
 		for (j = 0; j < mesh.final_points.size(); j++){
-			if ((mesh.midPoint[i][0] == mesh.final_points[j][0]) && (mesh.midPoint[i][1] == mesh.final_points[j][1])){
+			if ((mesh.midPoint[i].x == mesh.final_points[j].x) && (mesh.midPoint[i].y == mesh.final_points[j].y)){
 				break;
 			}
 		}
@@ -393,7 +369,7 @@ void Pixel::CreatePerfectBoundary(Image image, Mesh &mesh)
 	ofstream out("./boudaryVertexList.txt");
 	out << mesh.final_points.size() << endl;
 	for (int i = 0; i < mesh.final_points.size(); i++){
-		out << mesh.final_points[i][0] << "," << mesh.final_points[i][1];
+		out << mesh.final_points[i].x << "," << mesh.final_points[i].y;
 		out << endl;
 	}
 	//-----------------------------------------------

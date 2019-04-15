@@ -1,3 +1,4 @@
+#pragma once
 #include "CloudInterior.h"
 
 CloudInterior::CloudInterior(void)
@@ -146,14 +147,14 @@ float CloudInterior::Interpolat(float x, float y)
 
 void CloudInterior::Update(const Cylinder& curCylinder)
 {
-	for (float cur_x = curCylinder.center[0] - curCylinder.radius; cur_x<curCylinder.center[0] + curCylinder.radius; cur_x += interval_x)
+	for (float cur_x = curCylinder.center.x - curCylinder.radius; cur_x<curCylinder.center.x + curCylinder.radius; cur_x += interval_x)
 	{
-		float y_start = curCylinder.center[1] - sqrt(curCylinder.radius*curCylinder.radius - pow(cur_x - curCylinder.center[0], 2));
-		float y_end = curCylinder.center[1] + sqrt(curCylinder.radius*curCylinder.radius - pow(cur_x - curCylinder.center[0], 2));
+		float y_start = curCylinder.center.y - sqrt(curCylinder.radius*curCylinder.radius - pow(cur_x - curCylinder.center.x, 2));
+		float y_end = curCylinder.center.y + sqrt(curCylinder.radius*curCylinder.radius - pow(cur_x - curCylinder.center.x, 2));
 		for (float cur_y = y_start; cur_y<y_end; cur_y += interval_y)
 		{
-			float z_start = curCylinder.center[2] - curCylinder.height / 2/*-sqrt(curCylinder.radius*curCylinder.radius-pow(cur_x-curCylinder.center.x,2)-pow(cur_y-curCylinder.center.y,2))*/;
-			float z_end = curCylinder.center[2] + curCylinder.height / 2/*+sqrt(curCylinder.radius*curCylinder.radius-pow(cur_x-curCylinder.center.x,2)-pow(cur_y-curCylinder.center.y,2))*/;
+			float z_start = curCylinder.center.z - curCylinder.height / 2/*-sqrt(curCylinder.radius*curCylinder.radius-pow(cur_x-curCylinder.center.x,2)-pow(cur_y-curCylinder.center.y,2))*/;
+			float z_end = curCylinder.center.z + curCylinder.height / 2/*+sqrt(curCylinder.radius*curCylinder.radius-pow(cur_x-curCylinder.center.x,2)-pow(cur_y-curCylinder.center.y,2))*/;
 
 			for (float cur_z = z_start; cur_z<z_end; cur_z += interval_z)
 			{
@@ -173,7 +174,7 @@ void CloudInterior::Update(const Cylinder& curCylinder)
 }
 
 
-bool CloudInterior::FindSegment(float intesection[2], Vector3f P, Vector3f direction)
+bool CloudInterior::FindSegment(float intesection[2], float* P, float* direction)
 {
 	float x_min = CloudBox.x_min;
 	float x_max = CloudBox.x_max;
@@ -278,11 +279,11 @@ bool CloudInterior::FindSegment(float intesection[2], Vector3f P, Vector3f direc
 		return  false;
 
 }
-float CloudInterior::PathLen(Vector3f P0, Vector3f direction, const  Cylinder&  extraLocalVolume)
+float CloudInterior::PathLen(Vector3 P0, Vector3 direction, const  Cylinder&  extraLocalVolume)
 {
 	//find segment which is in [x_min,x_max;y_min,y_max;z_min,z_max], max {left}<=t<=min{left}
 	float intersection[2];
-	bool  isFind = FindSegment(intersection, P0, direction);//操作是将三阶点返回一个浮点型数组
+	bool  isFind = FindSegment(intersection, !P0, !direction);//操作是将三阶点返回一个浮点型数组
 
 	if (!isFind)
 	{
@@ -297,7 +298,7 @@ float CloudInterior::PathLen(Vector3f P0, Vector3f direction, const  Cylinder&  
 
 	int LineSampleRes = INT_RES;
 	float line_interval = (t1 - t0) / (LineSampleRes - 1);
-	float sampleInterval = direction.norm()*(t1 - t0) / (LineSampleRes - 1);
+	float sampleInterval = Magnitude(direction)*(t1 - t0) / (LineSampleRes - 1);
 
 	float Trans = expf(-sampleInterval*CONSTANT_ATTEN);
 	float  light = SUN_INTENSITY;
@@ -307,10 +308,10 @@ float CloudInterior::PathLen(Vector3f P0, Vector3f direction, const  Cylinder&  
 	float q = ((1 - Trans)*scale + Trans);
 	for (int i = LineSampleRes - 2; i>0; i--)
 	{
-		Vector3f samplePoint = P0 + direction*(t0 + (i + 1)*line_interval);
-		int x_index = int((samplePoint[0] - CloudBox.x_min) / interval_x);
-		int y_index = int((samplePoint[1] - CloudBox.y_min) / interval_y);
-		int z_index = int((samplePoint[2] - CloudBox.z_min) / interval_z);
+		Vector3 samplePoint = P0 + direction*(t0 + (i + 1)*line_interval);
+		int x_index = int((samplePoint.x - CloudBox.x_min) / interval_x);
+		int y_index = int((samplePoint.y - CloudBox.y_min) / interval_y);
+		int z_index = int((samplePoint.z - CloudBox.z_min) / interval_z);
 
 		if (IsCloudCube(x_index, y_index, z_index)/*||isInLocalVolume(P0,extraLocalVolume)*/)
 		{
@@ -331,19 +332,19 @@ float CloudInterior::PathLen(Vector3f P0, Vector3f direction, const  Cylinder&  
 
 }
 
-bool CloudInterior::isInLocalVolume(Vector3f p0, const Cylinder& curCylinder)
+bool CloudInterior::isInLocalVolume(Vector3 p0, const Cylinder& curCylinder)
 {
-	float x = p0[0];
-	float y = p0[1];
-	float z = p0[2];
+	float x = p0.x;
+	float y = p0.y;
+	float z = p0.z;
 
-	if (z<curCylinder.center[2] - curCylinder.height / 2)
+	if (z<curCylinder.center.z - curCylinder.height / 2)
 		return false;
 
-	if (z>curCylinder.center[2] + curCylinder.height / 2)
+	if (z>curCylinder.center.z + curCylinder.height / 2)
 		return false;
 
-	float dis2center = pow(x - curCylinder.center[0], 2) + pow(y - curCylinder.center[1], 2);
+	float dis2center = pow(x - curCylinder.center.x, 2) + pow(y - curCylinder.center.y, 2);
 	if (dis2center>curCylinder.radius*curCylinder.radius)
 		return false;
 

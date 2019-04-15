@@ -25,7 +25,7 @@ public:
 	void PropagationCylinders(Image image, Sky sky, Sun sun);
 	float ComputeSingleScattering(float H, int px, int py, Image image, Sky sky, Sun sun);
 	float ComputeNormalHeightNeightborAvg(int px, int py, Image image, Pixel pixel,Sky sky);
-	float PhaseFunction(Vector3f v1, Vector3f v2);
+	float PhaseFunction(Vector3 v1, Vector3 v2);
 	void  CreateHeightFieldHalf(Image image, Pixel pixel, Sky sky);
 
 	void SetHeightField(int i, float value);

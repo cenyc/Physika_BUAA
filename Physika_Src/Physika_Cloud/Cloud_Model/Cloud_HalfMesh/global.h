@@ -1,16 +1,14 @@
 //system
+#pragma once
 #include <stdio.h>
-#include <tchar.h>
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fstream>
 #include <iostream>
-#include <Physika_Core\Vectors\vector_3d.h>
-#include <Physika_Core\Vectors\vector_2d.h>
+#include "Vector.h"
 #include <vector>
-using namespace Physika;
 using namespace std;
 //GL
 //#include "GL/glut.h"
@@ -37,8 +35,8 @@ using namespace std;
 
 //1
 //#define  SUN_INTENSITY (40) 
-#define  CLOUD_FILE   "input\\test.jpg"
-#define  PIXELTYPEFILE "input/pixelifo_test.txt"
+//#define  CLOUD_FILE   "input/test.jpg"
+//#define  PIXELTYPEFILE "input/pixelifo_test.txt"
 
 //2
 //#define  SUN_INTENSITY (30) 
@@ -77,13 +75,13 @@ using namespace std;
 //The cloud volume is the union of cylinders
 struct Cylinder//圆柱体内点
 {
-	Vector3f center;
+	Vector3 center;
 	float   radius;
 	float   height;
 
-	Cylinder(Vector3f center, float radius, float height)
+	Cylinder(Vector3 center, float radius, float height)
 	{
-		this->center += center;
+		this->center = center;
 		this->radius = radius;
 		this->height = height;
 	}
@@ -105,7 +103,7 @@ struct Cylinder//圆柱体内点
 	}
 	Cylinder()
 	{
-		center = Vector3f(0, 0, 0);
+		center = Vector3(0, 0, 0);
 		radius = 0;
 		height = 0;
 

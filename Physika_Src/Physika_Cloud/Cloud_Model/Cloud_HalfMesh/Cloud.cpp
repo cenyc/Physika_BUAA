@@ -1,3 +1,4 @@
+#pragma once
 #include "Cloud.h"
 #include <algorithm>
 void Cloud::Initial()
@@ -12,10 +13,10 @@ void Cloud::CreatePropagationPath(Image image, Sun sun, Pixel pixel)
 	path.clear();//二维点向量构成的路径
 
 
-	Vector3f  sunVec = sun.GetSunVecUV() * 2;//
-	float k = -sunVec[0] / sunVec[1];
+	Vector3  sunVec = sun.GetSunVecUV() * 2;//
+	float k = -sunVec.x / sunVec.y;
 
-	float b = sunVec[1] - k*sunVec[0];//计算与光源垂直投影后到视平面，与够成面垂直的直线
+	float b = sunVec.y - k*sunVec.x;//计算与光源垂直投影后到视平面，与够成面垂直的直线
 
 	//  kx-y+b=0
 
@@ -98,10 +99,10 @@ std:sort(pixelIflList.begin(), pixelIflList.end());
 Cylinder Cloud::CreateCylinder(int x_index, int y_index, Image image, Sky sky ,Sun sun)
 {
 	float H = 0.3;
-	Vector3f center(1.0*x_index / image.GetImg_maxWH(), 1.0*(image.GetImg_height() - y_index) / image.GetImg_maxWH(), 0.0);
+	Vector3 center(1.0*x_index / image.GetImg_maxWH(), 1.0*(image.GetImg_height() - y_index) / image.GetImg_maxWH(), 0.0);
 
 	Cylinder curCylinder;
-	curCylinder.center += center;
+	curCylinder.center = center;
 	curCylinder.radius = 1.5 / image.GetImg_maxWH();
 	curCylinder.height = 2 * H;
 
@@ -171,7 +172,7 @@ float Cloud::ComputeSingleScattering(float H, int px, int py, Image image, Sky s
 	float  curTrans = expf(-CONSTANT_ATTEN*dH);
 
 	Cylinder extraLocalVolume;
-	extraLocalVolume.center = Vector3f(x, y, 0);
+	extraLocalVolume.center = Vector3(x, y, 0);
 	extraLocalVolume.height = 2 * H;
 	extraLocalVolume.radius = 1.5 / image.GetImg_maxWH();
 
@@ -179,9 +180,9 @@ float Cloud::ComputeSingleScattering(float H, int px, int py, Image image, Sky s
 	{
 		float zi = -H + dH*i;
 
-		Vector3f Xi(x, y, zi);
+		Vector3 Xi(x, y, zi);
 		float pathlen = cloudIn.PathLen(Xi, sun.GetSunVecUV(), extraLocalVolume);//在cloud里面计算出一个浮点型的lignt，
-		integralvalue += pathlen*totalTrans*(1 - curTrans)*PhaseFunction(Vector3f(0, 0, -1), sun.GetSunVecUV()/= sun.GetSunVecUV().norm());
+		integralvalue += pathlen*totalTrans*(1 - curTrans)*PhaseFunction(Vector3(0, 0, -1), Normalize(sun.GetSunVecUV()));
 		totalTrans *= curTrans;
 
 	}
@@ -230,9 +231,9 @@ float Cloud::ComputeNormalHeightNeightborAvg(int px, int py, Image image, Pixel 
 	return  avg;
 }
 
-float Cloud::PhaseFunction(Vector3f v1, Vector3f v2)
+float Cloud::PhaseFunction(Vector3 v1, Vector3 v2)
 {
-	float cosTheta = v1.dot(v2) / (v1.norm()*v2.norm());
+	float cosTheta = Angle(v1, v2);
 	//float g=0.85;  
 	//	return 1.0/ (4.0 * M_PI) * (1.0 - g*g) /pow(1.0 + g*g - 2.0 * g * cosTheta, 1.5);
 
@@ -287,7 +288,7 @@ void Cloud::CreateHeightFieldHalf(Image image,Pixel pixel,Sky sky)
 
 			}
 		}
-	ofstream out("E:/代码/mesh_x/output/img_height.txt");
+	ofstream out("./img_height.txt");
 	//out.open("clinder_height.txt");
 	for (int i = 0; i<image.GetImg_height(); i++)
 	{

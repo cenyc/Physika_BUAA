@@ -16,9 +16,9 @@ public:
 	//因为边界点存储在final_points向量的最前端，所以该变量存储了边界点的数目，即最后一个边界点在向量中的位置（用于最后扣除轮廓以外的面）
 	int edge_point_number;
 	//存取云内部采样点
-	vector<Vector2f> midPoint;
+	vector<Vector2> midPoint;
 	//存取轮廓点+云内部采样点
-	vector<Vector2f> final_points;
+	vector<Vector2> final_points;
 	//-----------------------------------
 
 	Mesh();
